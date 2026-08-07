@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glimpsd — Discover what's around you</title>
+<meta name="description" content="Glimpsd is the map-first discovery network for finding like-minded people, local events, great places, and hidden gems.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c5cfc'/><text x='50%25' y='58%25' font-size='18' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='system-ui'>G</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+<style>
+  :root[data-theme="day"] {
+    --bg: #faf9fe;
+    --bg-panel: rgba(255, 255, 255, 0.75);
+    --bg-panel-solid: #ffffff;
+    --text: #0f0c20;
+    --text-soft: #5b587b;
+    --border: rgba(124, 92, 252, 0.12);
+    --purple: #7c5cfc;
+    --purple-dark: #5833ee;
+    --purple-glow: rgba(124, 92, 252, 0.18);
+    --green: #10b981;
+    --blue: #3b82f6;
+    --orange: #f59e0b;
+    --hero-map-bg: #e6ebf5;
+    --shadow-card: 0 30px 100px -20px rgba(124, 92, 252, 0.25);
+    --shadow-btn: 0 12px 30px -8px rgba(124, 92, 252, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.6);
+  }
+  :root[data-theme="night"] {
+    --bg: #070611;
+    --bg-panel: rgba(19, 17, 34, 0.75);
+    --bg-panel-solid: #131122;
+    --text: #f5f4fd;
+    --text-soft: #a19dbf;
+    --border: rgba(155, 125, 255, 0.15);
+    --purple: #9b7dff;
+    --purple-dark: #7c5cfc;
+    --purple-glow: rgba(155, 125, 255, 0.2);
+    --green: #34d17a;
+    --blue: #60a5fa;
+    --orange: #fbbf24;
+    --hero-map-bg: #0d0b1a;
+    --shadow-card: 0 30px 100px -20px rgba(0, 0, 0, 0.8);
+    --shadow-btn: 0 12px 30px -8px rgba(155, 125, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg); color: var(--text);
+    transition: background 0.4s ease, color 0.4s ease;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+
+  /* Background Ambient Glows */
+  .glow-bg {
+    position: absolute; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
+    top: -200px; left: 50%; transform: translateX(-50%); pointer-events: none; z-index: -1;
+    filter: blur(80px);
+  }
+
+  /* Header / Nav */
+  .nav-outer {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-panel);
+  }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
+  .logo { font-family: 'Space Grotesk', sans-serif; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 22px; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 11px;
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 18px;
+    box-shadow: var(--shadow-btn);
+  }
+  .nav-links { display: flex; gap: 32px; font-size: 14px; font-weight: 600; color: var(--text-soft); }
+  .nav-links a { transition: all 0.2s; }
+  .nav-links a:hover { color: var(--purple); transform: translateY(-1px); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 12px;
+    font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.02); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color: white; padding: 12px 24px; box-shadow: var(--shadow-btn);
+  }
+  .btn-ghost { background: var(--bg-panel); color: var(--text); padding: 11px 20px; border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--purple); }
+  
+  .theme-toggle {
+    width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--bg-panel); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; transition: all 0.2s;
+  }
+  .theme-toggle:hover { border-color: var(--purple); transform: rotate(15deg); }
+
+  /* Hero Section */
+  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; padding: 80px 0; min-height: 85vh; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+    color: var(--purple); background: var(--purple-glow); border: 1px solid var(--border);
+    padding: 6px 16px; border-radius: 100px; margin-bottom: 24px;
+  }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 56px; line-height: 1.05; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.03em; }
+  h1 .accent {
+    background: linear-gradient(135deg, var(--purple), #c084fc);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero .lede { font-size: 18px; color: var(--text-soft); line-height: 1.6; max-width: 480px; margin-bottom: 36px; }
+  .hero-cta { display: flex; gap: 14px; align-items: center; margin-bottom: 28px; }
+  .hero-cta .btn-primary { padding: 16px 32px; font-size: 16px; }
+  .trust-line { font-size: 13.5px; color: var(--text-soft); display: flex; align-items: center; gap: 10px; font-weight: 500; }
+  .trust-line svg { color: var(--green); flex-shrink: 0; }
+
+  /* Map Visualizer */
+  .map-card {
+    position: relative; border-radius: 32px; overflow: hidden; aspect-ratio: 1/1;
+    background: var(--hero-map-bg); box-shadow: var(--shadow-card); border: 1px solid var(--border);
+  }
+  #glimpsd-map {
+    position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease;
+  }
+  #glimpsd-map.loaded { opacity: 1; }
+  .map-loading {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; z-index: 5; transition: opacity 0.4s ease;
+    background: var(--hero-map-bg); color: var(--text-soft); font-size: 13px; font-weight: 600;
+  }
+  .map-loading.hidden { opacity: 0; pointer-events: none; }
+  .map-spinner {
+    width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--purple-glow);
+    border-top-color: var(--purple); animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* Mapbox default control styling to match the panel aesthetic */
+  .mapboxgl-ctrl-top-right { top: 16px; right: 16px; }
+  .mapboxgl-ctrl-group {
+    border-radius: 12px !important; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.18) !important;
+    border: 1px solid var(--border) !important;
+  }
+  .mapboxgl-ctrl-attrib { border-radius: 8px 0 0 0 !important; font-size: 10px !important; }
+  .me-dot {
+    position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--blue);
+    border: 3.5px solid #fff; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px var(--blue); z-index: 3; pointer-events: none;
+  }
+  .me-pulse {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80px; height: 80px; border-radius: 50%; background: rgba(59, 130, 246, 0.2);
+    animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite; z-index: 2; pointer-events: none;
+  }
+  @keyframes ping { 75%, 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
+
+  .glimpsd-marker {
+    display: flex; flex-direction: column; align-items: center;
+    cursor: pointer;
+    /* NOTE: no transform/animation on this element — Mapbox sets its
+       transform directly to position it on the map. Animating transform
+       here would fight with that every frame and freeze the pin. */
+  }
+  .marker-inner {
+    display: flex; flex-direction: column; align-items: center;
+    animation: float 4s ease-in-out infinite alternate;
+  }
+  .pin-svg-wrap {
+    position: relative; width: 52px; height: 70px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .glimpsd-marker:hover .pin-svg-wrap { transform: scale(1.1) translateY(-4px); }
+  .pin-glow {
+    position: absolute; left: 50%; bottom: -6px; width: 46px; height: 16px;
+    transform: translateX(-50%); border-radius: 50%; filter: blur(6px);
+    background: var(--pin-glow, rgba(124,92,252,0.5)); z-index: -1;
+  }
+  .pin-icon-img {
+    display: block; width: 52px; height: auto;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.35));
+  }
+  .pin-label {
+    margin-top: 4px; padding: 7px 13px; border-radius: 50px; white-space: nowrap;
+    background: var(--bg-panel-solid); border: 1.5px solid var(--pin-color, var(--border));
+    box-shadow: 0 10px 24px rgba(0,0,0,0.22); font-size: 12px; font-weight: 700;
+  }
+  @keyframes float { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
+
+  /* Bottom sheet detail card */
+  .map-overlay {
+    position: absolute; inset: 0; background: rgba(5, 3, 15, 0.45); opacity: 0;
+    pointer-events: none; transition: opacity 0.3s ease; z-index: 15;
+  }
+  .map-overlay.open { opacity: 1; pointer-events: auto; }
+  .detail-sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--bg-panel-solid); border-radius: 26px 26px 0 0;
+    box-shadow: 0 -20px 50px rgba(0,0,0,0.35); padding: 22px 22px 24px;
+    transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .detail-sheet.open { transform: translateY(0); }
+  .sheet-close {
+    position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-soft);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px;
+  }
+  .sheet-tag {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
+    color: white; background: var(--sheet-color, var(--purple)); padding: 5px 12px; border-radius: 50px;
+    margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .sheet-icon {
+    width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+  }
+  .sheet-icon img { width: 100%; height: 100%; object-fit: contain; }
+  .sheet-title { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .sheet-desc { font-size: 13.5px; color: var(--text-soft); line-height: 1.55; margin-bottom: 14px; max-width: 90%; }
+  .sheet-meta {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+    color: var(--sheet-color, var(--purple)); margin-bottom: 18px;
+  }
+  .sheet-cta {
+    width: 100%; padding: 13px; text-align: center;
+  }
+
+  /* Section Styling */
+  .features { padding: 90px 0; }
+  .section-title-wrap { text-align: center; max-width: 580px; margin: 0 auto 50px; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .section-sub { font-size: 16px; color: var(--text-soft); }
+
+  .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .f-card {
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 24px; padding: 28px;
+    transition: all 0.3s ease; position: relative; overflow: hidden;
+    backdrop-filter: blur(12px);
+  }
+  .f-card::before {
+    content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top left, var(--purple-glow), transparent 70%);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .f-card:hover { transform: translateY(-6px); border-color: var(--purple); box-shadow: var(--shadow-card); }
+  .f-card:hover::before { opacity: 1; }
+  .f-icon {
+    width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center;
+    justify-content: center; margin-bottom: 20px; font-size: 22px; position: relative; z-index: 1;
+  }
+  .f-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
+  .f-card p { font-size: 14px; color: var(--text-soft); line-height: 1.6; margin-bottom: 18px; position: relative; z-index: 1; }
+  .f-count {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text-soft);
+    position: relative; z-index: 1;
+  }
+  .f-count .num {
+    background: var(--purple); color: white; border-radius: 100px; padding: 2px 9px; font-size: 11px;
+  }
+
+  /* How It Works Track */
+  .how { padding: 80px 0; }
+  .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
+  .how-step {
+    background: var(--bg-panel); border: 1px solid var(--border); padding: 30px 24px; border-radius: 20px;
+    position: relative; transition: all 0.3s;
+  }
+  .how-step:hover { border-color: var(--purple); transform: translateY(-4px); }
+  .how-node {
+    width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px; color: white; margin-bottom: 20px; box-shadow: var(--shadow-btn);
+  }
+  .how-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .how-step p { font-size: 13.5px; color: var(--text-soft); line-height: 1.55; }
+
+  /* Safety Grid */
+  .safety {
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 28px;
+    padding: 48px; margin-bottom: 90px; backdrop-filter: blur(12px);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+  }
+  .s-item { display: flex; flex-direction: column; gap: 12px; }
+  .s-icon {
+    width: 46px; height: 46px; border-radius: 14px;
+    background: var(--purple-glow); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .s-item h4 { font-size: 16px; font-weight: 700; }
+  .s-item p { font-size: 13px; color: var(--text-soft); line-height: 1.55; }
+
+  /* CTA Banner */
+  .cta-band {
+    position: relative; background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    border-radius: 32px; padding: 70px 40px; text-align: center; color: white; margin-bottom: 80px;
+    overflow: hidden; box-shadow: var(--shadow-card);
+  }
+  .cta-band::before {
+    content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cta-band h2 { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; margin-bottom: 14px; }
+  .cta-band p { opacity: 0.9; margin-bottom: 30px; font-size: 17px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .cta-band .btn-primary { background: white; color: var(--purple-dark); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+  .cta-band .btn-primary:hover { background: #f5f3ff; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 40px 0; }
+  .footer-inner { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-soft); }
+  .footer-links { display: flex; gap: 24px; font-weight: 500; }
+  .footer-links a:hover { color: var(--purple); }
+
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .hero { grid-template-columns: 1fr; padding: 40px 0; gap: 40px; }
+    h1 { font-size: 42px; }
+    .features-grid, .how-grid, .safety { grid-template-columns: repeat(2, 1fr); }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    .features-grid, .how-grid, .safety { grid-template-columns: 1fr; }
+    .cta-band { padding: 40px 20px; }
+    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-bg"></div>
+
+<div class="nav-outer"><div class="wrap">
+  <nav>
+    <div class="logo"><div class="logo-mark">G</div>Glimpsd</div>
+    <div class="nav-links">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#discover">People</a>
+      <a href="#discover">Events</a>
+      <a href="#discover">Places</a>
+      <a href="#discover">Gems</a>
+      <a href="#safety">Safety</a>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="btn btn-ghost">Log In</a>
+      <a href="#" class="btn btn-primary">Start for Free</a>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="theme-icon">☀️</span>
+      </button>
+    </div>
+  </nav>
+</div></div>
+
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">
+        <span>🛡️</span> 18+ Verified · Private by Design
+      </div>
+      <h1>Find your people.<br>Discover what's <span class="accent">around you.</span></h1>
+      <p class="lede">Glimpsd connects you with like-minded individuals, local events, great places, and hidden gems nearby — driven by real interests, not endless swipes.</p>
+      <div class="hero-cta">
+        <a href="#" class="btn btn-primary">Start for Free →</a>
+        <a href="#how-it-works" class="btn btn-ghost">How It Works</a>
+      </div>
+      <div class="trust-line">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4z"/></svg>
+        Every member is ID-verified. Exact location remains completely private.
+      </div>
+    </div>
+
+    <div class="map-card">
+      <div class="map-loading" id="mapLoading">
+        <div class="map-spinner"></div>
+        <span id="mapLoadingText">Finding you on the map…</span>
+      </div>
+      <div id="glimpsd-map"></div>
+      <div class="me-pulse"></div>
+      <div class="me-dot"></div>
+      <div class="map-overlay" id="mapOverlay" onclick="closeSheet()"></div>
+      <div class="detail-sheet" id="detailSheet">
+        <button class="sheet-close" onclick="closeSheet()" aria-label="Close">✕</button>
+        <span class="sheet-tag" id="sheetTag">Category</span>
+        <div class="sheet-icon" id="sheetIcon">👥</div>
+        <div class="sheet-title" id="sheetTitle">Title</div>
+        <div class="sheet-desc" id="sheetDesc">Description</div>
+        <div class="sheet-meta" id="sheetMeta">Meta line</div>
+        <a href="#" class="btn btn-primary sheet-cta">Sign up to see more →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="discover">
+    <div class="section-title-wrap">
+      <h2 class="section-title">Four ways to explore</h2>
+      <p class="section-sub">Uncover a localized network built specifically around your lifestyle.</p>
+    </div>
+    <div class="features-grid">
+      <div class="f-card">
+        <div class="f-icon" style="background:var(--purple-glow); color:var(--purple);">👥</div>
+        <h3>People</h3>
+        <p>Find genuine people nearby who share specific hobbies and common ground.</p>
+        <div class="f-count"><span class="num">12</span> people nearby</div>
+      </div>
+      <div class="f-card">
+        <div class="f-icon" style="background:rgba(16, 185, 129, 0.15); color:var(--green);">📅</div>
+        <h3>Events</h3>
+        <p>Discover vibrant local happenings, markets, live performances, and workshops.</p>
+        <div class="f-count"><span class="num">8</span> events this week</div>
+      </div>
+      <div class="f-card">
+        <div class="f-icon" style="background:rgba(59, 130, 246, 0.15); color:var(--blue);">📍</div>
+        <h3>Places</h3>
+        <p>Explore curate-worthy coffee spots, creative studios, and neighborhood hubs.</p>
+        <div class="f-count"><span class="num">15</span> places nearby</div>
+      </div>
+      <div class="f-card">
+        <div class="f-icon" style="background:rgba(245, 158, 11, 0.15); color:var(--orange);">💎</div>
+        <h3>Gems</h3>
+        <p>Access exclusive local discounts, secret perks, and member-only specials.</p>
+        <div class="f-count"><span class="num">23</span> gems around you</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how-it-works">
+    <div class="section-title-wrap">
+      <h2 class="section-title">Consent-based discovery</h2>
+      <p class="section-sub">No pressure, no unwanted messages, and complete discretion.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-node">1</div>
+        <h4>Send a Glimpsd</h4>
+        <p>Send one free Glimpsd daily — an intentional signal of real interest.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-node">2</div>
+        <h4>Private Decisions</h4>
+        <p>The recipient can accept or decline quietly without awkwardness.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-node">3</div>
+        <h4>Mutual Connection</h4>
+        <p>Conversations only open when both parties demonstrate mutual interest.</p>
+      </div>
+      <div class="how-step">
+        <div class="how-node">4</div>
+        <h4>Zero Trace</h4>
+        <p>Unaccepted requests quietly vanish automatically without leaving a trace.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="safety">
+    <div class="safety">
+      <div class="s-item">
+        <div class="s-icon">🔒</div>
+        <h4>Private by Design</h4>
+        <p>Complete control over what information you choose to display.</p>
+      </div>
+      <div class="s-item">
+        <div class="s-icon">🤝</div>
+        <h4>Consent First</h4>
+        <p>No uninvited direct messages or cold outreach allowed.</p>
+      </div>
+      <div class="s-item">
+        <div class="s-icon">📍</div>
+        <h4>Fuzzy Location</h4>
+        <p>Your precise geolocation is never exposed to anyone.</p>
+      </div>
+      <div class="s-item">
+        <div class="s-icon">✓</div>
+        <h4>18+ ID Verified</h4>
+        <p>Strict identity verification ensures a real, authentic community.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <h2>Ready to explore your surroundings?</h2>
+    <p>Free to join. Built for safety, privacy, and genuine local discoveries.</p>
+    <a href="#" class="btn btn-primary">Get Started for Free →</a>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div>© 2026 Glimpsd. All rights reserved.</div>
+      <div class="footer-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Guidelines</a>
+        <a href="#">Safety</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  /* ---------- Theme (day/night) ---------- */
+  function currentThemeFromClock() {
+    const hour = new Date().getHours();
+    return (hour >= 6 && hour < 18) ? 'day' : 'night';
+  }
+
+  (function() {
+    const auto = currentThemeFromClock();
+    document.documentElement.setAttribute('data-theme', auto);
+    document.getElementById('theme-icon').textContent = auto === 'day' ? '☀️' : '🌙';
+  })();
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDay = html.getAttribute('data-theme') === 'day';
+    const newTheme = isDay ? 'night' : 'day';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('theme-icon').textContent = isDay ? '🌙' : '☀️';
+    applyMapStyleForTheme(newTheme);
+  }
+
+  /* ---------- Live Map ---------- */
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZ2xpbXBzZCIsImEiOiJjbXNqY3dzNzQwMGx3MnlwdXJiMGx4d2Z3In0.LxjUMWyvyXpTpRVboGnBwA';
+
+  const MAP_STYLES = {
+    day: 'mapbox://styles/mapbox/streets-v12',
+    night: 'mapbox://styles/mapbox/dark-v11'
+  };
+
+  // Fallback center if IP-lookup fails or is blocked (Tampa Bay, FL)
+  const FALLBACK_CENTER = { lat: 27.9506, lng: -82.4572 };
+
+  const SAMPLE_PINS = [
+    {
+      category: 'people', color: '--purple', glow: 'rgba(124,92,252,0.55)',
+      icon: 'assets/icons/people-purple.svg',
+      tag: 'People', title: 'People Nearby',
+      label: 'People Nearby',
+      desc: '12 people nearby share your interests and are open to connecting.',
+      meta: '12 people nearby',
+      dLat: 0.014, dLng: -0.018
+    },
+    {
+      category: 'events', color: '--green', glow: 'rgba(16,185,129,0.55)',
+      icon: 'assets/icons/events-green.svg',
+      tag: 'Event', title: 'Morning Makers Market',
+      label: 'Morning Market (Sat)',
+      desc: 'Local artisans, fresh coffee, and live music every Saturday morning.',
+      meta: 'Sat · 9:00 AM',
+      dLat: 0.011, dLng: 0.016
+    },
+    {
+      category: 'gems', color: '--orange', glow: 'rgba(245,158,11,0.55)',
+      icon: 'assets/icons/gems-orange.svg',
+      tag: 'Gem', title: 'Hidden Speakeasy Perk',
+      label: 'Hidden Speakeasy Perk',
+      desc: 'A members-only cocktail lounge tucked behind an unmarked door.',
+      meta: 'Unlock with a Gem',
+      dLat: -0.013, dLng: -0.015
+    },
+    {
+      category: 'places', color: '--blue', glow: 'rgba(59,130,246,0.55)',
+      icon: 'assets/icons/places-blue.svg',
+      tag: 'Place', title: 'Riverside Artisan Café',
+      label: 'Riverside Artisan Café',
+      desc: 'Locally roasted coffee and pastries with a view over the water.',
+      meta: '4.8 ★ (128 reviews)',
+      dLat: -0.010, dLng: 0.019
+    }
+  ];
+
+  let glimpsdMap = null;
+
+  function buildPinElement(pin, index) {
+    const wrap = document.createElement('div');
+    wrap.className = 'glimpsd-marker';
+    wrap.innerHTML = `
+      <div class="marker-inner" style="animation-delay: ${index * 0.5}s;">
+        <div class="pin-svg-wrap">
+          <div class="pin-glow" style="--pin-glow: ${pin.glow};"></div>
+          <img class="pin-icon-img" src="${pin.icon}" alt="${pin.tag}" />
+        </div>
+        <div class="pin-label" style="--pin-color: var(${pin.color});">${pin.label}</div>
+      </div>
+    `;
+    wrap.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openSheet(pin);
+    });
+    return wrap;
+  }
+
+  function addSamplePins(map, center) {
+    SAMPLE_PINS.forEach((pin, i) => {
+      const el = buildPinElement(pin, i);
+      new mapboxgl.Marker({ element: el, anchor: 'bottom' })
+        .setLngLat([center.lng + pin.dLng, center.lat + pin.dLat])
+        .addTo(map);
+    });
+  }
+
+  /* ---------- Bottom sheet ---------- */
+  function openSheet(pin) {
+    document.getElementById('sheetTag').textContent = pin.tag;
+    document.getElementById('sheetIcon').innerHTML = `<img src="${pin.icon}" alt="${pin.tag}" />`;
+    document.getElementById('sheetTitle').textContent = pin.title;
+    document.getElementById('sheetDesc').textContent = pin.desc;
+    document.getElementById('sheetMeta').textContent = pin.meta;
+
+    const colorVar = `var(${pin.color})`;
+    document.getElementById('sheetTag').style.setProperty('--sheet-color', colorVar);
+    document.getElementById('sheetIcon').style.setProperty('--sheet-color', colorVar);
+    document.getElementById('sheetMeta').style.setProperty('--sheet-color', colorVar);
+
+    document.getElementById('detailSheet').classList.add('open');
+    document.getElementById('mapOverlay').classList.add('open');
+  }
+
+  function closeSheet() {
+    document.getElementById('detailSheet').classList.remove('open');
+    document.getElementById('mapOverlay').classList.remove('open');
+  }
+
+  function applyMapStyleForTheme(theme) {
+    if (!glimpsdMap) return;
+    glimpsdMap.setStyle(MAP_STYLES[theme]);
+    // Markers are DOM overlays independent of style and persist automatically.
+  }
+
+  function initMap(center) {
+    const theme = document.documentElement.getAttribute('data-theme');
+    glimpsdMap = new mapboxgl.Map({
+      container: 'glimpsd-map',
+      style: MAP_STYLES[theme],
+      center: [center.lng, center.lat],
+      zoom: 13,
+      attributionControl: true,
+      scrollZoom: false,
+      cooperativeGestures: true
+    });
+    glimpsdMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+
+    glimpsdMap.on('load', () => {
+      addSamplePins(glimpsdMap, center);
+      document.getElementById('glimpsd-map').classList.add('loaded');
+      document.getElementById('mapLoading').classList.add('hidden');
+    });
+  }
+
+  function locateVisitorAndInit() {
+    // IP-based, city-level lookup — no permission prompt required.
+    fetch('https://ipapi.co/json/')
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(data => {
+        if (data && data.latitude && data.longitude) {
+          initMap({ lat: data.latitude, lng: data.longitude });
+        } else {
+          initMap(FALLBACK_CENTER);
+        }
+      })
+      .catch(() => {
+        initMap(FALLBACK_CENTER);
+      });
+  }
+
+  locateVisitorAndInit();
+</script>
+</body>
+</html>
