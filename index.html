@@ -1,677 +1,449 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" data-theme="day">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glimpsd — Discover what's around you</title>
-<meta name="description" content="Glimpsd is the map-first discovery network for finding like-minded people, local events, great places, and hidden gems.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c5cfc'/><text x='50%25' y='58%25' font-size='18' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='system-ui'>G</text></svg>">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071221">
+<title>Glimpsd — Life is happening nearby.</title>
+<meta name="description" content="Glimpsd is the map-first discovery network for people, events, places and Gems nearby.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
 <style>
-  :root[data-theme="day"] {
-    --bg: #faf9fe;
-    --bg-panel: rgba(255, 255, 255, 0.75);
-    --bg-panel-solid: #ffffff;
-    --text: #0f0c20;
-    --text-soft: #5b587b;
-    --border: rgba(124, 92, 252, 0.12);
-    --purple: #7c5cfc;
-    --purple-dark: #5833ee;
-    --purple-glow: rgba(124, 92, 252, 0.18);
-    --green: #10b981;
-    --blue: #3b82f6;
-    --orange: #f59e0b;
-    --hero-map-bg: #e6ebf5;
-    --shadow-card: 0 30px 100px -20px rgba(124, 92, 252, 0.25);
-    --shadow-btn: 0 12px 30px -8px rgba(124, 92, 252, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.6);
-  }
-  :root[data-theme="night"] {
-    --bg: #070611;
-    --bg-panel: rgba(19, 17, 34, 0.75);
-    --bg-panel-solid: #131122;
-    --text: #f5f4fd;
-    --text-soft: #a19dbf;
-    --border: rgba(155, 125, 255, 0.15);
-    --purple: #9b7dff;
-    --purple-dark: #7c5cfc;
-    --purple-glow: rgba(155, 125, 255, 0.2);
-    --green: #34d17a;
-    --blue: #60a5fa;
-    --orange: #fbbf24;
-    --hero-map-bg: #0d0b1a;
-    --shadow-card: 0 30px 100px -20px rgba(0, 0, 0, 0.8);
-    --shadow-btn: 0 12px 30px -8px rgba(155, 125, 255, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.08);
-  }
+:root{
+ --bg:#f7f8fc;--ink:#08111f;--muted:#606a78;--purple:#7657ff;--violet:#9c5cff;
+ --pink:#ff4c91;--blue:#4299ff;--green:#27c982;--orange:#ff8b3e;--line:#e9eaf0;
+ --shadow:0 24px 70px rgba(18,27,48,.16);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font:inherit}
+img{display:block;max-width:100%}
+.shell{width:min(1180px,calc(100% - 56px));margin:auto}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; }
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
-  body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg); color: var(--text);
-    transition: background 0.4s ease, color 0.4s ease;
-    line-height: 1.5;
-    overflow-x: hidden;
-  }
-  a { color: inherit; text-decoration: none; }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+/* NAV */
+.topbar{position:absolute;z-index:30;left:0;right:0;top:0;height:74px;color:#fff}
+.nav{height:74px;display:flex;align-items:center;gap:26px}
+.logo-img{width:124px;height:auto}
+.navlinks{display:flex;gap:28px;margin-left:auto;font-size:13px;font-weight:700}
+.navlinks a{opacity:.9}
+.navlinks a:hover{opacity:1}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.mode{width:48px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.18);color:#fff}
+.cta{border:0;border-radius:999px;padding:12px 21px;font-weight:800;cursor:pointer}
+.cta-primary{background:linear-gradient(135deg,#9b63ff,#6749ff);color:#fff;box-shadow:0 10px 28px rgba(114,79,255,.34)}
 
-  /* Background Ambient Glows */
-  .glow-bg {
-    position: absolute; width: 600px; height: 600px; border-radius: 50%;
-    background: radial-gradient(circle, var(--purple-glow) 0%, transparent 70%);
-    top: -200px; left: 50%; transform: translateX(-50%); pointer-events: none; z-index: -1;
-    filter: blur(80px);
-  }
+/* HERO */
+.hero{
+ min-height:650px;position:relative;color:#fff;overflow:hidden;
+ background-image:
+ linear-gradient(90deg,rgba(5,15,29,.98) 0%,rgba(5,15,29,.92) 34%,rgba(5,15,29,.48) 59%,rgba(5,15,29,.2) 100%),
+ url("assets/hero-skyline.jpg");
+ background-size:cover;background-position:center 48%;
+}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(3,10,20,.12),rgba(3,10,20,.07) 70%,rgba(3,10,20,.26));pointer-events:none}
+.hero-grid{min-height:650px;padding-top:74px;display:grid;grid-template-columns:.9fr 1.1fr;align-items:center;position:relative;z-index:2}
+.hero-copy{padding-bottom:46px}
+.hero h1{font-family:"Space Grotesk";font-size:78px;line-height:.94;letter-spacing:-.055em;margin:0 0 24px}
+.hero h1 .nearby{background:linear-gradient(90deg,#7c58ff,#49a7ff);-webkit-background-clip:text;color:transparent}
+.hero p{max-width:430px;margin:0 0 26px;font-size:18px;line-height:1.52;color:#eef1f6}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.hero .secondary{border:1px solid rgba(255,255,255,.72);background:rgba(6,16,30,.22);color:#fff}
+.proof{display:flex;align-items:center;gap:12px;color:#eef1f7;font-size:13px}
+.faces{display:flex}
+.faces i{width:31px;height:31px;border-radius:50%;border:2px solid #fff;margin-left:-6px;background:linear-gradient(135deg,#dda875,#4e6a90)}
+.faces i:first-child{margin-left:0}
+.stars{color:#ffc13a;letter-spacing:1px}
+.phone-wrap{position:relative;height:550px}
+.phone{position:absolute;width:430px;right:5%;top:92px;filter:drop-shadow(0 28px 45px rgba(0,0,0,.47));z-index:3}
+.phone-glow{position:absolute;width:480px;height:480px;border-radius:50%;right:-15px;top:60px;background:radial-gradient(circle,rgba(107,84,255,.22),transparent 69%);filter:blur(22px)}
 
-  /* Header / Nav */
-  .nav-outer {
-    position: sticky; top: 0; z-index: 100;
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-panel);
-  }
-  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
-  .logo { font-family: 'Space Grotesk', sans-serif; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 22px; }
-  .logo-mark {
-    width: 36px; height: 36px; border-radius: 11px;
-    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 800; font-size: 18px;
-    box-shadow: var(--shadow-btn);
-  }
-  .nav-links { display: flex; gap: 32px; font-size: 14px; font-weight: 600; color: var(--text-soft); }
-  .nav-links a { transition: all 0.2s; }
-  .nav-links a:hover { color: var(--purple); transform: translateY(-1px); }
-  .nav-right { display: flex; align-items: center; gap: 12px; }
-  
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 12px;
-    font-weight: 700; font-size: 14px; cursor: pointer; font-family: inherit;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .btn:hover { transform: translateY(-2px) scale(1.02); }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-    color: white; padding: 12px 24px; box-shadow: var(--shadow-btn);
-  }
-  .btn-ghost { background: var(--bg-panel); color: var(--text); padding: 11px 20px; border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--purple); }
-  
-  .theme-toggle {
-    width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border);
-    background: var(--bg-panel); display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 16px; transition: all 0.2s;
-  }
-  .theme-toggle:hover { border-color: var(--purple); transform: rotate(15deg); }
+/* FEATURE STRIP */
+.feature-float{position:relative;z-index:9;margin-top:-34px}
+.feature-strip{background:#fff;border:1px solid #ededf4;border-radius:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden}
+.fmini{padding:26px 14px 24px;text-align:center;border-right:1px solid var(--line);font-size:13px;font-weight:700;line-height:1.35}
+.fmini:last-child{border-right:0}
+.icon{font-size:29px;display:block;margin-bottom:10px}
 
-  /* Hero Section */
-  .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; padding: 80px 0; min-height: 85vh; }
-  .eyebrow {
-    display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
-    color: var(--purple); background: var(--purple-glow); border: 1px solid var(--border);
-    padding: 6px 16px; border-radius: 100px; margin-bottom: 24px;
-  }
-  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 56px; line-height: 1.05; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.03em; }
-  h1 .accent {
-    background: linear-gradient(135deg, var(--purple), #c084fc);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .hero .lede { font-size: 18px; color: var(--text-soft); line-height: 1.6; max-width: 480px; margin-bottom: 36px; }
-  .hero-cta { display: flex; gap: 14px; align-items: center; margin-bottom: 28px; }
-  .hero-cta .btn-primary { padding: 16px 32px; font-size: 16px; }
-  .trust-line { font-size: 13.5px; color: var(--text-soft); display: flex; align-items: center; gap: 10px; font-weight: 500; }
-  .trust-line svg { color: var(--green); flex-shrink: 0; }
+/* DISCOVERY */
+.section{padding:64px 0}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:20px}
+.section-head h2{font-family:"Space Grotesk";font-size:46px;line-height:1.02;letter-spacing:-.045em;margin:0}
+.section-head p{width:360px;color:var(--muted);font-size:15px;margin:0 0 5px}
+.discovery{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.discovery-card{position:relative;overflow:hidden;border-radius:20px;box-shadow:0 15px 36px rgba(23,30,48,.12);background:#111827;aspect-ratio:3/4;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+.discovery-card .dc-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.discovery-card .dc-shade{position:absolute;inset:0;background:linear-gradient(to top,rgba(5,10,20,.97) 38%,rgba(5,10,20,.65) 62%,rgba(5,10,20,.05) 100%)}
+.discovery-card .dc-body{position:relative;z-index:2;padding:20px 18px 22px}
+.dc-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:14px}
+.discovery-card h3{font-family:"Space Grotesk";font-size:22px;margin:0 0 6px;letter-spacing:-.02em}
+.discovery-card p{font-size:13px;line-height:1.4;color:#dde2ea;margin:0 0 12px;max-width:92%}
+.dc-arrow{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px}
 
-  /* Map Visualizer */
-  .map-card {
-    position: relative; border-radius: 32px; overflow: hidden; aspect-ratio: 1/1;
-    background: var(--hero-map-bg); box-shadow: var(--shadow-card); border: 1px solid var(--border);
-  }
-  #glimpsd-map {
-    position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease;
-  }
-  #glimpsd-map.loaded { opacity: 1; }
-  .map-loading {
-    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; gap: 12px; z-index: 5; transition: opacity 0.4s ease;
-    background: var(--hero-map-bg); color: var(--text-soft); font-size: 13px; font-weight: 600;
-  }
-  .map-loading.hidden { opacity: 0; pointer-events: none; }
-  .map-spinner {
-    width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--purple-glow);
-    border-top-color: var(--purple); animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  /* Mapbox default control styling to match the panel aesthetic */
-  .mapboxgl-ctrl-top-right { top: 16px; right: 16px; }
-  .mapboxgl-ctrl-group {
-    border-radius: 12px !important; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.18) !important;
-    border: 1px solid var(--border) !important;
-  }
-  .mapboxgl-ctrl-attrib { border-radius: 8px 0 0 0 !important; font-size: 10px !important; }
-  .me-dot {
-    position: absolute; width: 18px; height: 18px; border-radius: 50%; background: var(--blue);
-    border: 3.5px solid #fff; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px var(--blue); z-index: 3; pointer-events: none;
-  }
-  .me-pulse {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80px; height: 80px; border-radius: 50%; background: rgba(59, 130, 246, 0.2);
-    animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite; z-index: 2; pointer-events: none;
-  }
-  @keyframes ping { 75%, 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
+/* APPROVED MODULES */
+.approved-module{background:#fff;border-radius:22px;border:1px solid #ededf4;box-shadow:0 15px 40px rgba(31,39,60,.08);overflow:hidden}
+.module-image{width:100%}
+.byw-module{display:grid;grid-template-columns:.62fr 1.38fr;gap:34px;padding:40px}
+.byw-copy h2{font-family:"Space Grotesk";font-size:32px;line-height:1.08;letter-spacing:-.03em;margin:0 0 12px}
+.byw-copy p{color:var(--muted);font-size:14.5px;line-height:1.5;margin:0 0 22px;max-width:280px}
+.byw-see-all{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13.5px;color:var(--purple);border:1.5px solid #e3ddff;padding:11px 18px;border-radius:999px}
+.byw-join{display:flex;align-items:center;gap:10px;margin-top:28px;font-size:12.5px;color:var(--muted)}
+.byw-join .faces{display:flex}
+.byw-join .faces i{width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-left:-6px;background:linear-gradient(135deg,#dda875,#4e6a90)}
+.byw-join .faces i:first-child{margin-left:0}
+.byw-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start}
+.byw-chip{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:16px 10px;text-align:center;font-weight:700;font-size:13px;cursor:pointer}
+.byw-chip .emo{font-size:26px;display:block;margin-bottom:8px}
+.byw-chip.selected{border-color:var(--purple);background:#f8f6ff}
+.byw-check{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
+.byw-continue{grid-column:1/-1;justify-self:end;border:0;border-radius:999px;padding:14px 26px;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#9b63ff,#6749ff);cursor:pointer;margin-top:6px}
 
-  .glimpsd-marker {
-    display: flex; flex-direction: column; align-items: center;
-    cursor: pointer;
-    /* NOTE: no transform/animation on this element — Mapbox sets its
-       transform directly to position it on the map. Animating transform
-       here would fight with that every frame and freeze the pin. */
-  }
-  .marker-inner {
-    display: flex; flex-direction: column; align-items: center;
-    animation: float 4s ease-in-out infinite alternate;
-  }
-  .pin-svg-wrap {
-    position: relative; width: 52px; height: 70px;
-    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .glimpsd-marker:hover .pin-svg-wrap { transform: scale(1.1) translateY(-4px); }
-  .pin-glow {
-    position: absolute; left: 50%; bottom: -6px; width: 46px; height: 16px;
-    transform: translateX(-50%); border-radius: 50%; filter: blur(6px);
-    background: var(--pin-glow, rgba(124,92,252,0.5)); z-index: -1;
-  }
-  .pin-icon-img {
-    display: block; width: 52px; height: auto;
-    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.35));
-  }
-  .pin-label {
-    margin-top: 4px; padding: 7px 13px; border-radius: 50px; white-space: nowrap;
-    background: var(--bg-panel-solid); border: 1.5px solid var(--pin-color, var(--border));
-    box-shadow: 0 10px 24px rgba(0,0,0,0.22); font-size: 12px; font-weight: 700;
-  }
-  @keyframes float { 0% { transform: translateY(0px); } 100% { transform: translateY(-8px); } }
+/* people map, keep exact extracted approved composition */
+.people-map-wrap{padding-top:22px}
 
-  /* Bottom sheet detail card */
-  .map-overlay {
-    position: absolute; inset: 0; background: rgba(5, 3, 15, 0.45); opacity: 0;
-    pointer-events: none; transition: opacity 0.3s ease; z-index: 15;
-  }
-  .map-overlay.open { opacity: 1; pointer-events: auto; }
-  .detail-sheet {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 20;
-    background: var(--bg-panel-solid); border-radius: 26px 26px 0 0;
-    box-shadow: 0 -20px 50px rgba(0,0,0,0.35); padding: 22px 22px 24px;
-    transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .detail-sheet.open { transform: translateY(0); }
-  .sheet-close {
-    position: absolute; top: 16px; right: 16px; width: 30px; height: 30px; border-radius: 50%;
-    background: var(--bg); border: 1px solid var(--border); color: var(--text-soft);
-    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px;
-  }
-  .sheet-tag {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800;
-    color: white; background: var(--sheet-color, var(--purple)); padding: 5px 12px; border-radius: 50px;
-    margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.03em;
-  }
-  .sheet-icon {
-    width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
-    margin-bottom: 10px;
-  }
-  .sheet-icon img { width: 100%; height: 100%; object-fit: contain; }
-  .sheet-title { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; margin-bottom: 6px; }
-  .sheet-desc { font-size: 13.5px; color: var(--text-soft); line-height: 1.55; margin-bottom: 14px; max-width: 90%; }
-  .sheet-meta {
-    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
-    color: var(--sheet-color, var(--purple)); margin-bottom: 18px;
-  }
-  .sheet-cta {
-    width: 100%; padding: 13px; text-align: center;
-  }
+/* footer */
+.big-footer{
+ min-height:330px;position:relative;color:#fff;display:flex;align-items:center;overflow:hidden;
+ background:
+ linear-gradient(90deg,rgba(5,13,24,.84) 0%,rgba(5,13,24,.57) 35%,rgba(5,13,24,.16) 70%,rgba(5,13,24,.08)),
+ url("assets/footer-beach.jpg") center 44%/cover no-repeat;
+}
+.big-footer:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(4,10,18,.36),transparent 65%)}
+.footer-copy{position:relative;z-index:2;padding:42px 0}
+.footer-copy h2{font-family:"Space Grotesk";font-size:48px;line-height:1.03;letter-spacing:-.04em;margin:0 0 13px}
+.footer-copy p{max-width:420px;font-size:15px;color:#f1f4f7;margin:0 0 20px}
+.pwa-note{font-size:12px;margin-top:10px;color:#e5eaf0}
+.bottom{background:#06101d;color:#9ca9b8;font-size:12px;padding:18px 0}
+.bottom-row{display:flex;justify-content:space-between}
 
-  /* Section Styling */
-  .features { padding: 90px 0; }
-  .section-title-wrap { text-align: center; max-width: 580px; margin: 0 auto 50px; }
-  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
-  .section-sub { font-size: 16px; color: var(--text-soft); }
+/* PEOPLE + LIVE MAP MODULE */
+.pm-module{display:grid;grid-template-columns:.82fr 1.18fr;gap:0;border-radius:22px;overflow:hidden;background:#fff;border:1px solid #ededf4;box-shadow:0 15px 40px rgba(31,39,60,.08)}
+.pm-copy{padding:44px 38px}
+.pm-copy h2{font-family:"Space Grotesk";font-size:34px;line-height:1.06;letter-spacing:-.03em;margin:0 0 12px}
+.pm-copy p{color:var(--muted);font-size:14.5px;line-height:1.5;max-width:340px;margin:0 0 26px}
+.pm-people{display:flex;gap:14px}
+.pm-person{flex:1;min-width:0}
+.pm-avatar{width:100%;aspect-ratio:1/1;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:"Space Grotesk";font-weight:700;font-size:22px;margin-bottom:10px;overflow:hidden}
+.pm-avatar img{width:100%;height:100%;object-fit:cover}
+.pm-person h4{margin:0 0 2px;font-size:14px}
+.pm-person .dist{color:var(--muted);font-size:12px;margin:0 0 8px}
+.pm-tags{display:flex;flex-wrap:wrap;gap:5px}
+.pm-tags span{background:#f3f0ff;color:var(--purple);font-size:10.5px;font-weight:700;padding:4px 8px;border-radius:999px}
+.pm-map-wrap{position:relative;min-height:520px}
+#pm-map{position:absolute;inset:0}
+.pm-pills{position:absolute;top:16px;left:16px;right:16px;z-index:2;display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.pm-pill{border:0;white-space:nowrap;background:#fff;color:var(--ink);font-weight:700;font-size:12.5px;padding:9px 16px;border-radius:999px;box-shadow:0 6px 16px rgba(20,25,40,.12);cursor:pointer}
+.pm-pill.active{background:linear-gradient(135deg,#9b63ff,#6749ff);color:#fff}
+.pm-controls{position:absolute;right:14px;top:70px;z-index:2;display:flex;flex-direction:column;gap:8px}
+.pm-ctrl-btn{width:38px;height:38px;border-radius:10px;background:#fff;border:0;box-shadow:0 6px 16px rgba(20,25,40,.12);cursor:pointer;font-size:15px}
+.pm-card{position:absolute;left:16px;bottom:16px;right:16px;max-width:340px;background:#fff;border-radius:16px;box-shadow:0 14px 30px rgba(20,25,40,.22);display:flex;gap:12px;padding:12px;z-index:2}
+.pm-card img{width:64px;height:64px;border-radius:12px;object-fit:cover;flex-shrink:0}
+.pm-card-body h5{margin:0 0 2px;font-size:13.5px}
+.pm-card-body .tag-new{background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.pm-card-body p{margin:0 0 4px;font-size:11.5px;color:var(--muted)}
+.pm-card-body .perk{font-size:11px;color:var(--purple);font-weight:700}
+.pm-pin{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(10,15,25,.32);border:2px solid #fff;cursor:pointer}
+.pm-pin span{transform:rotate(45deg);font-size:14px}
+.pm-pin.you{border-radius:50%;transform:none;box-shadow:0 0 0 8px rgba(66,153,255,.22)}
 
-  .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-  .f-card {
-    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 24px; padding: 28px;
-    transition: all 0.3s ease; position: relative; overflow: hidden;
-    backdrop-filter: blur(12px);
-  }
-  .f-card::before {
-    content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top left, var(--purple-glow), transparent 70%);
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .f-card:hover { transform: translateY(-6px); border-color: var(--purple); box-shadow: var(--shadow-card); }
-  .f-card:hover::before { opacity: 1; }
-  .f-icon {
-    width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center;
-    justify-content: center; margin-bottom: 20px; font-size: 22px; position: relative; z-index: 1;
-  }
-  .f-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; position: relative; z-index: 1; }
-  .f-card p { font-size: 14px; color: var(--text-soft); line-height: 1.6; margin-bottom: 18px; position: relative; z-index: 1; }
-  .f-count {
-    display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text-soft);
-    position: relative; z-index: 1;
-  }
-  .f-count .num {
-    background: var(--purple); color: white; border-radius: 100px; padding: 2px 9px; font-size: 11px;
-  }
-
-  /* How It Works Track */
-  .how { padding: 80px 0; }
-  .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
-  .how-step {
-    background: var(--bg-panel); border: 1px solid var(--border); padding: 30px 24px; border-radius: 20px;
-    position: relative; transition: all 0.3s;
-  }
-  .how-step:hover { border-color: var(--purple); transform: translateY(-4px); }
-  .how-node {
-    width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 16px; color: white; margin-bottom: 20px; box-shadow: var(--shadow-btn);
-  }
-  .how-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .how-step p { font-size: 13.5px; color: var(--text-soft); line-height: 1.55; }
-
-  /* Safety Grid */
-  .safety {
-    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 28px;
-    padding: 48px; margin-bottom: 90px; backdrop-filter: blur(12px);
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
-  }
-  .s-item { display: flex; flex-direction: column; gap: 12px; }
-  .s-icon {
-    width: 46px; height: 46px; border-radius: 14px;
-    background: var(--purple-glow); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px;
-  }
-  .s-item h4 { font-size: 16px; font-weight: 700; }
-  .s-item p { font-size: 13px; color: var(--text-soft); line-height: 1.55; }
-
-  /* CTA Banner */
-  .cta-band {
-    position: relative; background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-    border-radius: 32px; padding: 70px 40px; text-align: center; color: white; margin-bottom: 80px;
-    overflow: hidden; box-shadow: var(--shadow-card);
-  }
-  .cta-band::before {
-    content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .cta-band h2 { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; margin-bottom: 14px; }
-  .cta-band p { opacity: 0.9; margin-bottom: 30px; font-size: 17px; max-width: 500px; margin-left: auto; margin-right: auto; }
-  .cta-band .btn-primary { background: white; color: var(--purple-dark); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-  .cta-band .btn-primary:hover { background: #f5f3ff; }
-
-  /* Footer */
-  footer { border-top: 1px solid var(--border); padding: 40px 0; }
-  .footer-inner { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--text-soft); }
-  .footer-links { display: flex; gap: 24px; font-weight: 500; }
-  .footer-links a:hover { color: var(--purple); }
-
-  /* Responsive Adjustments */
-  @media (max-width: 992px) {
-    .hero { grid-template-columns: 1fr; padding: 40px 0; gap: 40px; }
-    h1 { font-size: 42px; }
-    .features-grid, .how-grid, .safety { grid-template-columns: repeat(2, 1fr); }
-    .nav-links { display: none; }
-  }
-  @media (max-width: 600px) {
-    .features-grid, .how-grid, .safety { grid-template-columns: 1fr; }
-    .cta-band { padding: 40px 20px; }
-    .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
-  }
+/* mobile */
+@media(max-width:920px){
+ .navlinks{display:none}
+ .hero-grid{grid-template-columns:1fr;min-height:auto}
+ .hero{min-height:auto}
+ .hero-copy{text-align:center;padding:115px 0 20px}
+ .hero h1{font-size:62px}
+ .hero p{margin-left:auto;margin-right:auto}
+ .hero-actions,.proof{justify-content:center}
+ .phone-wrap{height:430px}
+ .phone{width:340px;left:50%;right:auto;transform:translateX(-50%)}
+ .feature-strip{grid-template-columns:repeat(2,1fr)}
+ .fmini{border-bottom:1px solid var(--line)}
+ .section-head{display:block}
+ .section-head p{width:auto;margin-top:12px}
+ .discovery{grid-template-columns:repeat(2,1fr)}
+ .pm-module{grid-template-columns:1fr}
+ .pm-map-wrap{min-height:420px}
+ .byw-module{grid-template-columns:1fr;gap:20px;padding:26px}
+ .byw-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:560px){
+ .shell{width:min(100% - 32px,1180px)}
+ .topbar{height:66px}.nav{height:66px}.logo-img{width:105px}.mode{display:none}.cta{padding:10px 14px;font-size:12px}
+ .hero-copy{padding-top:100px}
+ .hero h1{font-size:49px}
+ .hero p{font-size:15px}
+ .phone-wrap{height:365px}.phone{width:300px}
+ .feature-float{margin-top:-18px}
+ .feature-strip{grid-template-columns:1fr 1fr}
+ .fmini{padding:18px 8px;font-size:11px}
+ .section{padding:50px 0}
+ .section-head h2{font-size:38px}
+ .discovery{gap:8px}
+ .big-footer{min-height:360px;background-position:38% center}
+ .footer-copy h2{font-size:40px}
+ .bottom-row{display:block;text-align:center}
+}
 </style>
 </head>
 <body>
 
-<div class="glow-bg"></div>
-
-<div class="nav-outer"><div class="wrap">
-  <nav>
-    <div class="logo"><div class="logo-mark">G</div>Glimpsd</div>
-    <div class="nav-links">
-      <a href="#how-it-works">How It Works</a>
-      <a href="#discover">People</a>
-      <a href="#discover">Events</a>
-      <a href="#discover">Places</a>
-      <a href="#discover">Gems</a>
-      <a href="#safety">Safety</a>
-    </div>
-    <div class="nav-right">
-      <a href="#" class="btn btn-ghost">Log In</a>
-      <a href="#" class="btn btn-primary">Start for Free</a>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-        <span id="theme-icon">☀️</span>
-      </button>
-    </div>
+<header class="topbar">
+ <div class="shell nav">
+  <img src="assets/logo-lockup.png" class="logo-img" alt="Glimpsd">
+  <nav class="navlinks">
+   <a href="#how">How it works</a><a href="#discover">People</a><a href="#discover">Events</a>
+   <a href="#discover">Places</a><a href="#discover">Gems</a><a href="#business">For Business</a><a href="#about">About</a>
   </nav>
-</div></div>
+  <div class="nav-actions"><button class="mode" aria-label="Theme">☀︎ ◔</button><button class="cta cta-primary install">Open Glimpsd</button></div>
+ </div>
+</header>
 
-<div class="wrap">
-  <section class="hero">
-    <div>
-      <div class="eyebrow">
-        <span>🛡️</span> 18+ Verified · Private by Design
-      </div>
-      <h1>Find your people.<br>Discover what's <span class="accent">around you.</span></h1>
-      <p class="lede">Glimpsd connects you with like-minded individuals, local events, great places, and hidden gems nearby — driven by real interests, not endless swipes.</p>
-      <div class="hero-cta">
-        <a href="#" class="btn btn-primary">Start for Free →</a>
-        <a href="#how-it-works" class="btn btn-ghost">How It Works</a>
-      </div>
-      <div class="trust-line">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l8 4v6c0 5-3.4 8.7-8 10-4.6-1.3-8-5-8-10V6l8-4z"/></svg>
-        Every member is ID-verified. Exact location remains completely private.
-      </div>
-    </div>
+<section class="hero">
+ <div class="shell hero-grid">
+  <div class="hero-copy">
+   <h1>Life is<br>happening<br><span class="nearby">nearby.</span></h1>
+   <p>The map-first discovery network that connects you to people, events, places and Gems that fit your life.</p>
+   <div class="hero-actions">
+    <button class="cta cta-primary install">Open Glimpsd →</button>
+    <a href="#discover" class="cta secondary">Watch Video&nbsp; ▶</a>
+   </div>
+   <div class="proof">
+    <span class="faces"><i></i><i></i><i></i><i></i></span>
+    <span class="stars">★★★★★</span><strong>4.9</strong><span>from local explorers</span>
+   </div>
+  </div>
+  <div class="phone-wrap">
+   <div class="phone-glow"></div>
+   <img src="assets/phone-approved.png" class="phone" alt="Glimpsd map-first PWA">
+  </div>
+ </div>
+</section>
 
-    <div class="map-card">
-      <div class="map-loading" id="mapLoading">
-        <div class="map-spinner"></div>
-        <span id="mapLoadingText">Finding you on the map…</span>
-      </div>
-      <div id="glimpsd-map"></div>
-      <div class="me-pulse"></div>
-      <div class="me-dot"></div>
-      <div class="map-overlay" id="mapOverlay" onclick="closeSheet()"></div>
-      <div class="detail-sheet" id="detailSheet">
-        <button class="sheet-close" onclick="closeSheet()" aria-label="Close">✕</button>
-        <span class="sheet-tag" id="sheetTag">Category</span>
-        <div class="sheet-icon" id="sheetIcon">👥</div>
-        <div class="sheet-title" id="sheetTitle">Title</div>
-        <div class="sheet-desc" id="sheetDesc">Description</div>
-        <div class="sheet-meta" id="sheetMeta">Meta line</div>
-        <a href="#" class="btn btn-primary sheet-cta">Sign up to see more →</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="features" id="discover">
-    <div class="section-title-wrap">
-      <h2 class="section-title">Four ways to explore</h2>
-      <p class="section-sub">Uncover a localized network built specifically around your lifestyle.</p>
-    </div>
-    <div class="features-grid">
-      <div class="f-card">
-        <div class="f-icon" style="background:var(--purple-glow); color:var(--purple);">👥</div>
-        <h3>People</h3>
-        <p>Find genuine people nearby who share specific hobbies and common ground.</p>
-        <div class="f-count"><span class="num">12</span> people nearby</div>
-      </div>
-      <div class="f-card">
-        <div class="f-icon" style="background:rgba(16, 185, 129, 0.15); color:var(--green);">📅</div>
-        <h3>Events</h3>
-        <p>Discover vibrant local happenings, markets, live performances, and workshops.</p>
-        <div class="f-count"><span class="num">8</span> events this week</div>
-      </div>
-      <div class="f-card">
-        <div class="f-icon" style="background:rgba(59, 130, 246, 0.15); color:var(--blue);">📍</div>
-        <h3>Places</h3>
-        <p>Explore curate-worthy coffee spots, creative studios, and neighborhood hubs.</p>
-        <div class="f-count"><span class="num">15</span> places nearby</div>
-      </div>
-      <div class="f-card">
-        <div class="f-icon" style="background:rgba(245, 158, 11, 0.15); color:var(--orange);">💎</div>
-        <h3>Gems</h3>
-        <p>Access exclusive local discounts, secret perks, and member-only specials.</p>
-        <div class="f-count"><span class="num">23</span> gems around you</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="how" id="how-it-works">
-    <div class="section-title-wrap">
-      <h2 class="section-title">Consent-based discovery</h2>
-      <p class="section-sub">No pressure, no unwanted messages, and complete discretion.</p>
-    </div>
-    <div class="how-grid">
-      <div class="how-step">
-        <div class="how-node">1</div>
-        <h4>Send a Glimpsd</h4>
-        <p>Send one free Glimpsd daily — an intentional signal of real interest.</p>
-      </div>
-      <div class="how-step">
-        <div class="how-node">2</div>
-        <h4>Private Decisions</h4>
-        <p>The recipient can accept or decline quietly without awkwardness.</p>
-      </div>
-      <div class="how-step">
-        <div class="how-node">3</div>
-        <h4>Mutual Connection</h4>
-        <p>Conversations only open when both parties demonstrate mutual interest.</p>
-      </div>
-      <div class="how-step">
-        <div class="how-node">4</div>
-        <h4>Zero Trace</h4>
-        <p>Unaccepted requests quietly vanish automatically without leaving a trace.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="safety">
-    <div class="safety">
-      <div class="s-item">
-        <div class="s-icon">🔒</div>
-        <h4>Private by Design</h4>
-        <p>Complete control over what information you choose to display.</p>
-      </div>
-      <div class="s-item">
-        <div class="s-icon">🤝</div>
-        <h4>Consent First</h4>
-        <p>No uninvited direct messages or cold outreach allowed.</p>
-      </div>
-      <div class="s-item">
-        <div class="s-icon">📍</div>
-        <h4>Fuzzy Location</h4>
-        <p>Your precise geolocation is never exposed to anyone.</p>
-      </div>
-      <div class="s-item">
-        <div class="s-icon">✓</div>
-        <h4>18+ ID Verified</h4>
-        <p>Strict identity verification ensures a real, authentic community.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-band">
-    <h2>Ready to explore your surroundings?</h2>
-    <p>Free to join. Built for safety, privacy, and genuine local discoveries.</p>
-    <a href="#" class="btn btn-primary">Get Started for Free →</a>
-  </section>
-
-  <footer>
-    <div class="footer-inner">
-      <div>© 2026 Glimpsd. All rights reserved.</div>
-      <div class="footer-links">
-        <a href="#">Terms</a>
-        <a href="#">Privacy</a>
-        <a href="#">Guidelines</a>
-        <a href="#">Safety</a>
-        <a href="#">Contact</a>
-      </div>
-    </div>
-  </footer>
+<div class="shell feature-float">
+ <div class="feature-strip">
+  <div class="fmini"><span class="icon">👥</span>Meet like-minded<br>people nearby</div>
+  <div class="fmini"><span class="icon">🗓️</span>Discover events<br>you'll love</div>
+  <div class="fmini"><span class="icon">📍</span>Explore amazing<br>places</div>
+  <div class="fmini"><span class="icon">💎</span>Unlock hidden<br>Gems & perks</div>
+  <div class="fmini"><span class="icon">🏪</span>Support local<br>businesses</div>
+ </div>
 </div>
 
+<section class="section" id="discover">
+ <div class="shell">
+  <div class="section-head">
+   <h2>Discover more<br>of what you love</h2>
+   <p>Glimpsd learns your interests to show you what matters most, right where you are.</p>
+  </div>
+  <div class="discovery">
+   <div class="discovery-card">
+    <img class="dc-photo" src="assets/discovery_people_photo.jpg" alt="">
+    <div class="dc-shade"></div>
+    <div class="dc-body">
+     <div class="dc-icon" style="background:var(--purple)">👥</div>
+     <h3>People</h3>
+     <p>Find your crew and make real connections.</p>
+     <div class="dc-arrow">→</div>
+    </div>
+   </div>
+   <div class="discovery-card">
+    <img class="dc-photo" src="assets/discovery_events_photo.jpg" alt="">
+    <div class="dc-shade"></div>
+    <div class="dc-body">
+     <div class="dc-icon" style="background:var(--pink)">🗓️</div>
+     <h3>Events</h3>
+     <p>From local shows to big moments — never miss out.</p>
+     <div class="dc-arrow">→</div>
+    </div>
+   </div>
+   <div class="discovery-card">
+    <img class="dc-photo" src="assets/discovery_places_photo.jpg" alt="">
+    <div class="dc-shade"></div>
+    <div class="dc-body">
+     <div class="dc-icon" style="background:var(--blue)">📍</div>
+     <h3>Places</h3>
+     <p>Find the perfect spot for any mood or moment.</p>
+     <div class="dc-arrow">→</div>
+    </div>
+   </div>
+   <div class="discovery-card">
+    <img class="dc-photo" src="assets/discovery_gems_photo.jpg" alt="">
+    <div class="dc-shade"></div>
+    <div class="dc-body">
+     <div class="dc-icon" style="background:var(--green)">💎</div>
+     <h3>Gems</h3>
+     <p>Hidden treasures, exclusive perks, just for you.</p>
+     <div class="dc-arrow">→</div>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="section" id="how" style="padding-top:6px">
+ <div class="shell approved-module">
+  <div class="byw-module">
+   <div class="byw-copy">
+    <h2>Build your world</h2>
+    <p>Choose your passions. We'll show you what matters most.</p>
+    <a href="#" class="byw-see-all">See all interests →</a>
+    <div class="byw-join">
+     <span class="faces"><i></i><i></i><i></i><i></i></span>
+     <span>Join 75,000+ explorers building their world</span>
+    </div>
+   </div>
+   <div class="byw-grid">
+    <div class="byw-chip selected"><span class="byw-check">✓</span><span class="emo">☕</span>Coffee</div>
+    <div class="byw-chip selected"><span class="byw-check">✓</span><span class="emo">📷</span>Photography</div>
+    <div class="byw-chip"><span class="emo">✈️</span>Travel</div>
+    <div class="byw-chip selected"><span class="byw-check">✓</span><span class="emo">🐠</span>Aquariums</div>
+    <div class="byw-chip"><span class="emo">🎸</span>Live Music</div>
+    <div class="byw-chip"><span class="emo">🥾</span>Hiking</div>
+    <div class="byw-chip selected"><span class="byw-check">✓</span><span class="emo">🏎️</span>Formula One</div>
+    <div class="byw-chip"><span class="emo">🍺</span>Craft Beer</div>
+    <div class="byw-chip"><span class="emo">🤖</span>AI &amp; Tech</div>
+    <div class="byw-chip"><span class="emo">🐶</span>Dogs</div>
+    <button class="byw-continue">Continue →</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="section people-map-wrap">
+ <div class="shell pm-module">
+  <div class="pm-copy">
+   <h2>People you may<br>enjoy meeting</h2>
+   <p>Based on shared interests and where you both are.</p>
+   <div class="pm-people">
+    <div class="pm-person">
+     <div class="pm-avatar"><img src="assets/person_emily.jpg" alt="Emily R."></div>
+     <h4>Emily R.</h4><p class="dist">0.5 mi away</p>
+     <div class="pm-tags"><span>Coffee</span><span>Photography</span><span>Travel</span></div>
+    </div>
+    <div class="pm-person">
+     <div class="pm-avatar"><img src="assets/person_mike.jpg" alt="Mike T."></div>
+     <h4>Mike T.</h4><p class="dist">0.7 mi away</p>
+     <div class="pm-tags"><span>F1</span><span>Craft Beer</span><span>Hiking</span></div>
+    </div>
+    <div class="pm-person">
+     <div class="pm-avatar"><img src="assets/person_sophia.jpg" alt="Sophia L."></div>
+     <h4>Sophia L.</h4><p class="dist">1.1 mi away</p>
+     <div class="pm-tags"><span>Animals</span><span>Travel</span><span>Live Music</span></div>
+    </div>
+   </div>
+  </div>
+  <div class="pm-map-wrap">
+   <div id="pm-map"></div>
+   <div class="pm-pills">
+    <button class="pm-pill active" data-cat="all">All</button>
+    <button class="pm-pill" data-cat="people">People</button>
+    <button class="pm-pill" data-cat="events">Events</button>
+    <button class="pm-pill" data-cat="places">Places</button>
+    <button class="pm-pill" data-cat="gems">Gems</button>
+    <button class="pm-pill" data-cat="business">Businesses</button>
+   </div>
+   <div class="pm-controls">
+    <button class="pm-ctrl-btn" id="pm-layers" title="Layers">🗂️</button>
+    <button class="pm-ctrl-btn" id="pm-locate" title="My location">📍</button>
+    <button class="pm-ctrl-btn" id="pm-compass" title="Reset bearing">🧭</button>
+   </div>
+   <div class="pm-card">
+    <img src="assets/aquatic_galleria.jpg" alt="Aquatic Galleria">
+    <div class="pm-card-body">
+     <h5>Aquatic Galleria<span class="tag-new">New Gem</span></h5>
+     <p>Aquarium Shop · 0.3 mi · ★ 4.9</p>
+     <span class="perk">💎 10% off Betta fish</span>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<section class="big-footer" id="about">
+ <div class="shell footer-copy">
+  <h2>Life is happening.<br>Go be part of it.</h2>
+  <p>Open Glimpsd in your browser, add it to your Home Screen, and discover what is happening around you.</p>
+  <button class="cta cta-primary install">Open Glimpsd →</button>
+  <div class="pwa-note">PWA at launch · No App Store required</div>
+ </div>
+</section>
+
+<footer class="bottom"><div class="shell bottom-row"><span>© 2026 Glimpsd</span><span>Life is happening nearby.</span></div></footer>
+
 <script>
-  /* ---------- Theme (day/night) ---------- */
-  function currentThemeFromClock() {
-    const hour = new Date().getHours();
-    return (hour >= 6 && hour < 18) ? 'day' : 'night';
-  }
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e;
+ document.querySelectorAll('.install').forEach(b=>b.textContent='Install Glimpsd →');
+});
+document.querySelectorAll('.install').forEach(b=>b.addEventListener('click',async()=>{
+ if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;}
+ else{window.scrollTo({top:document.querySelector('#discover').offsetTop-60,behavior:'smooth'});}
+}));
+document.querySelector('.mode').addEventListener('click',()=>document.body.classList.toggle('night'));
 
-  (function() {
-    const auto = currentThemeFromClock();
-    document.documentElement.setAttribute('data-theme', auto);
-    document.getElementById('theme-icon').textContent = auto === 'day' ? '☀️' : '🌙';
-  })();
+/* Live "People you may enjoy meeting" map panel */
+mapboxgl.accessToken='pk.eyJ1IjoiZ2xpbXBzZCIsImEiOiJjbXNqY3dzNzQwMGx3MnlwdXJiMGx4d2Z3In0.LxjUMWyvyXpTpRVboGnBwA';
+const pmCenter=[-82.6403,27.7676]; // St. Petersburg, FL
+const pmMap=new mapboxgl.Map({
+ container:'pm-map',
+ style:'mapbox://styles/mapbox/streets-v12',
+ center:pmCenter,
+ zoom:13.4,
+ attributionControl:false,
+ cooperativeGestures:true
+});
+pmMap.addControl(new mapboxgl.AttributionControl({compact:true}));
 
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDay = html.getAttribute('data-theme') === 'day';
-    const newTheme = isDay ? 'night' : 'day';
-    html.setAttribute('data-theme', newTheme);
-    document.getElementById('theme-icon').textContent = isDay ? '🌙' : '☀️';
-    applyMapStyleForTheme(newTheme);
-  }
+const pmColors={people:'#7657ff',events:'#ff4c91',places:'#4299ff',gems:'#27c982',business:'#ff8b3e'};
+const pmIcons={people:'👤',events:'🎟️',places:'📷',gems:'💎',business:'🛍️'};
+const pmDemo=[
+ {cat:'people', lng:-82.6455, lat:27.7710},
+ {cat:'people', lng:-82.6485, lat:27.7655},
+ {cat:'events', lng:-82.6420, lat:27.7718},
+ {cat:'events', lng:-82.6360, lat:27.7690},
+ {cat:'places', lng:-82.6330, lat:27.7712},
+ {cat:'places', lng:-82.6470, lat:27.7625},
+ {cat:'gems',   lng:-82.6350, lat:27.7645},
+ {cat:'gems',   lng:-82.6395, lat:27.7600},
+ {cat:'business',lng:-82.6410,lat:27.7660},
+];
+const pmMarkers=[];
+pmDemo.forEach(p=>{
+ const el=document.createElement('div');
+ el.className='pm-pin';
+ el.style.background=pmColors[p.cat];
+ el.innerHTML=`<span>${pmIcons[p.cat]}</span>`;
+ const marker=new mapboxgl.Marker({element:el}).setLngLat([p.lng,p.lat]).addTo(pmMap);
+ pmMarkers.push({cat:p.cat,marker});
+});
+// "You are here" marker
+const youEl=document.createElement('div');
+youEl.className='pm-pin you';
+youEl.style.background='#4299ff';
+new mapboxgl.Marker({element:youEl}).setLngLat(pmCenter).addTo(pmMap);
 
-  /* ---------- Live Map ---------- */
-  mapboxgl.accessToken = 'pk.eyJ1IjoiZ2xpbXBzZCIsImEiOiJjbXNqY3dzNzQwMGx3MnlwdXJiMGx4d2Z3In0.LxjUMWyvyXpTpRVboGnBwA';
-
-  const MAP_STYLES = {
-    day: 'mapbox://styles/mapbox/streets-v12',
-    night: 'mapbox://styles/mapbox/dark-v11'
-  };
-
-  // Fallback center if IP-lookup fails or is blocked (Tampa Bay, FL)
-  const FALLBACK_CENTER = { lat: 27.9506, lng: -82.4572 };
-
-  const SAMPLE_PINS = [
-    {
-      category: 'people', color: '--purple', glow: 'rgba(124,92,252,0.55)',
-      icon: 'assets/icons/people-purple.svg',
-      tag: 'People', title: 'People Nearby',
-      label: 'People Nearby',
-      desc: '12 people nearby share your interests and are open to connecting.',
-      meta: '12 people nearby',
-      dLat: 0.014, dLng: -0.018
-    },
-    {
-      category: 'events', color: '--green', glow: 'rgba(16,185,129,0.55)',
-      icon: 'assets/icons/events-green.svg',
-      tag: 'Event', title: 'Morning Makers Market',
-      label: 'Morning Market (Sat)',
-      desc: 'Local artisans, fresh coffee, and live music every Saturday morning.',
-      meta: 'Sat · 9:00 AM',
-      dLat: 0.011, dLng: 0.016
-    },
-    {
-      category: 'gems', color: '--orange', glow: 'rgba(245,158,11,0.55)',
-      icon: 'assets/icons/gems-orange.svg',
-      tag: 'Gem', title: 'Hidden Speakeasy Perk',
-      label: 'Hidden Speakeasy Perk',
-      desc: 'A members-only cocktail lounge tucked behind an unmarked door.',
-      meta: 'Unlock with a Gem',
-      dLat: -0.013, dLng: -0.015
-    },
-    {
-      category: 'places', color: '--blue', glow: 'rgba(59,130,246,0.55)',
-      icon: 'assets/icons/places-blue.svg',
-      tag: 'Place', title: 'Riverside Artisan Café',
-      label: 'Riverside Artisan Café',
-      desc: 'Locally roasted coffee and pastries with a view over the water.',
-      meta: '4.8 ★ (128 reviews)',
-      dLat: -0.010, dLng: 0.019
-    }
-  ];
-
-  let glimpsdMap = null;
-
-  function buildPinElement(pin, index) {
-    const wrap = document.createElement('div');
-    wrap.className = 'glimpsd-marker';
-    wrap.innerHTML = `
-      <div class="marker-inner" style="animation-delay: ${index * 0.5}s;">
-        <div class="pin-svg-wrap">
-          <div class="pin-glow" style="--pin-glow: ${pin.glow};"></div>
-          <img class="pin-icon-img" src="${pin.icon}" alt="${pin.tag}" />
-        </div>
-        <div class="pin-label" style="--pin-color: var(${pin.color});">${pin.label}</div>
-      </div>
-    `;
-    wrap.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openSheet(pin);
-    });
-    return wrap;
-  }
-
-  function addSamplePins(map, center) {
-    SAMPLE_PINS.forEach((pin, i) => {
-      const el = buildPinElement(pin, i);
-      new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-        .setLngLat([center.lng + pin.dLng, center.lat + pin.dLat])
-        .addTo(map);
-    });
-  }
-
-  /* ---------- Bottom sheet ---------- */
-  function openSheet(pin) {
-    document.getElementById('sheetTag').textContent = pin.tag;
-    document.getElementById('sheetIcon').innerHTML = `<img src="${pin.icon}" alt="${pin.tag}" />`;
-    document.getElementById('sheetTitle').textContent = pin.title;
-    document.getElementById('sheetDesc').textContent = pin.desc;
-    document.getElementById('sheetMeta').textContent = pin.meta;
-
-    const colorVar = `var(${pin.color})`;
-    document.getElementById('sheetTag').style.setProperty('--sheet-color', colorVar);
-    document.getElementById('sheetIcon').style.setProperty('--sheet-color', colorVar);
-    document.getElementById('sheetMeta').style.setProperty('--sheet-color', colorVar);
-
-    document.getElementById('detailSheet').classList.add('open');
-    document.getElementById('mapOverlay').classList.add('open');
-  }
-
-  function closeSheet() {
-    document.getElementById('detailSheet').classList.remove('open');
-    document.getElementById('mapOverlay').classList.remove('open');
-  }
-
-  function applyMapStyleForTheme(theme) {
-    if (!glimpsdMap) return;
-    glimpsdMap.setStyle(MAP_STYLES[theme]);
-    // Markers are DOM overlays independent of style and persist automatically.
-  }
-
-  function initMap(center) {
-    const theme = document.documentElement.getAttribute('data-theme');
-    glimpsdMap = new mapboxgl.Map({
-      container: 'glimpsd-map',
-      style: MAP_STYLES[theme],
-      center: [center.lng, center.lat],
-      zoom: 13,
-      attributionControl: true,
-      scrollZoom: false,
-      cooperativeGestures: true
-    });
-    glimpsdMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-
-    glimpsdMap.on('load', () => {
-      addSamplePins(glimpsdMap, center);
-      document.getElementById('glimpsd-map').classList.add('loaded');
-      document.getElementById('mapLoading').classList.add('hidden');
-    });
-  }
-
-  function locateVisitorAndInit() {
-    // IP-based, city-level lookup — no permission prompt required.
-    fetch('https://ipapi.co/json/')
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => {
-        if (data && data.latitude && data.longitude) {
-          initMap({ lat: data.latitude, lng: data.longitude });
-        } else {
-          initMap(FALLBACK_CENTER);
-        }
-      })
-      .catch(() => {
-        initMap(FALLBACK_CENTER);
-      });
-  }
-
-  locateVisitorAndInit();
+document.querySelectorAll('.pm-pill').forEach(btn=>{
+ btn.addEventListener('click',()=>{
+  document.querySelectorAll('.pm-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const cat=btn.dataset.cat;
+  pmMarkers.forEach(m=>{
+   m.marker.getElement().style.display=(cat==='all'||m.cat===cat)?'flex':'none';
+  });
+ });
+});
+document.getElementById('pm-locate').addEventListener('click',()=>pmMap.flyTo({center:pmCenter,zoom:14}));
+document.getElementById('pm-compass').addEventListener('click',()=>pmMap.resetNorthPitch());
+document.getElementById('pm-layers').addEventListener('click',()=>{
+ const cur=pmMap.getStyle().name;
+ pmMap.setStyle(cur&&cur.includes('Satellite')?'mapbox://styles/mapbox/streets-v12':'mapbox://styles/mapbox/satellite-streets-v12');
+});
 </script>
 </body>
 </html>
