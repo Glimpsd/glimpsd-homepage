@@ -65,7 +65,7 @@ img{display:block;max-width:100%}
 /* FEATURE STRIP */
 .feature-float{position:relative;z-index:9;margin-top:-34px}
 .feature-strip{background:#fff;border:1px solid #ededf4;border-radius:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(5,1fr);overflow:hidden}
-.fmini{padding:26px 14px 24px;text-align:center;border-right:1px solid var(--line);font-size:13px;font-weight:700;line-height:1.35}
+.fmini{padding:26px 14px 24px;text-align:center;border-right:1px solid var(--line);font-size:13px;font-weight:700;line-height:1.35;min-width:0;overflow-wrap:break-word}
 .fmini:last-child{border-right:0}
 .icon{font-size:29px;display:block;margin-bottom:10px}
 
@@ -96,7 +96,7 @@ img{display:block;max-width:100%}
 .byw-join .faces i{width:24px;height:24px;border-radius:50%;border:2px solid #fff;margin-left:-6px;background:linear-gradient(135deg,#dda875,#4e6a90)}
 .byw-join .faces i:first-child{margin-left:0}
 .byw-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start}
-.byw-chip{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:16px 10px;text-align:center;font-weight:700;font-size:13px;cursor:pointer}
+.byw-chip{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:16px 10px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;min-width:0;overflow-wrap:break-word}
 .byw-chip .emo{font-size:26px;display:block;margin-bottom:8px}
 .byw-chip.selected{border-color:var(--purple);background:#f8f6ff}
 .byw-check{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
@@ -189,6 +189,8 @@ img{display:block;max-width:100%}
  .bottom-row{display:block;text-align:center}
 }
 </style>
+  <link rel="stylesheet" href="assets/provider-section.css">
+  <link rel="stylesheet" href="/assets/glimpsd-legal.css">
 </head>
 <body>
 
@@ -199,7 +201,7 @@ img{display:block;max-width:100%}
    <a href="#how">How it works</a><a href="#discover">People</a><a href="#discover">Events</a>
    <a href="#discover">Places</a><a href="#discover">Gems</a><a href="#business">For Business</a><a href="#about">About</a>
   </nav>
-  <div class="nav-actions"><button class="mode" aria-label="Theme">☀︎ ◔</button><button class="cta cta-primary install">Open Glimpsd</button></div>
+  <div class="nav-actions"><button class="mode" aria-label="Theme">☀︎ ◔</button><button class="cta cta-primary install">Start for Free</button></div>
  </div>
 </header>
 
@@ -209,7 +211,7 @@ img{display:block;max-width:100%}
    <h1>Life is<br>happening<br><span class="nearby">nearby.</span></h1>
    <p>The map-first discovery network that connects you to people, events, places and Gems that fit your life.</p>
    <div class="hero-actions">
-    <button class="cta cta-primary install">Open Glimpsd →</button>
+    <button class="cta cta-primary install">Start for Free →</button>
     <a href="#discover" class="cta secondary">Watch Video&nbsp; ▶</a>
    </div>
    <div class="proof">
@@ -367,13 +369,106 @@ img{display:block;max-width:100%}
 <section class="big-footer" id="about">
  <div class="shell footer-copy">
   <h2>Life is happening.<br>Go be part of it.</h2>
-  <p>Open Glimpsd in your browser, add it to your Home Screen, and discover what is happening around you.</p>
-  <button class="cta cta-primary install">Open Glimpsd →</button>
+  <p>Create your free account in under a minute and discover what is happening around you.</p>
+  <button class="cta cta-primary install">Start for Free →</button>
   <div class="pwa-note">PWA at launch · No App Store required</div>
  </div>
 </section>
 
-<footer class="bottom"><div class="shell bottom-row"><span>© 2026 Glimpsd</span><span>Life is happening nearby.</span></div></footer>
+
+
+<!-- Glimpsd Content Provider section: place above the homepage's final CTA/footer. -->
+<section class="gp-providers" id="for-providers" aria-labelledby="gp-title">
+  <div class="gp-shell">
+    <header class="gp-heading">
+      <p class="gp-eyebrow">FOR LOCAL BUSINESSES &amp; EVENT ORGANIZERS</p>
+      <h2 id="gp-title">Put your place on the map.</h2>
+      <p>Glimpsd helps people discover local businesses, unique experiences, and events happening nearby. Show your neighborhood what you have to offer.</p>
+    </header>
+
+    <div class="gp-grid">
+      <article class="gp-card gp-business">
+        <div class="gp-card-content">
+          <div class="gp-kicker"><span class="gp-symbol" aria-hidden="true">⌂</span> FOR BUSINESSES</div>
+          <h3>Turn nearby discoveries into customers.</h3>
+          <p class="gp-intro">For <strong>$19.99 a month</strong>, manage your business on Glimpsd, publish one Gem, change your offer whenever you like, and see how people engage.</p>
+          <ul class="gp-benefits">
+            <li>One active Gem included</li>
+            <li>Edit or replace your offer anytime</li>
+            <li>Manage your business listing</li>
+            <li>Track views, clicks, saves and redemptions</li>
+          </ul>
+        </div>
+        <div class="gp-visual" aria-hidden="true">
+          <div class="gp-phone">
+            <div class="gp-phone-top"><span>9:41</span><span>•••</span></div>
+            <div class="gp-shop-photo"><span>LOCAL COFFEE HOUSE</span><div class="gp-awning"></div><div class="gp-windows"><i></i><i></i><i></i></div></div>
+            <div class="gp-phone-body">
+              <b>Riverstone Coffee</b><small>Coffee shop · Nearby</small>
+              <div class="gp-tab-row"><span>Overview</span><strong>Gems</strong><span>Photos</span></div>
+              <div class="gp-gem-tile"><span class="gp-gem-label">GEM</span><b>Free pastry with any drink</b><small>Show this Gem in store</small></div>
+              <div class="gp-mini-btn">Get Directions →</div>
+            </div>
+            <div class="gp-phone-nav">Home&nbsp;&nbsp; Explore&nbsp;&nbsp; + &nbsp;&nbsp; Inbox&nbsp;&nbsp; Me</div>
+          </div>
+        </div>
+        <div class="gp-card-action">
+          <a class="gp-button gp-button-business" href="/providers/business">List Your Business <span aria-hidden="true">→</span></a>
+          <p>A basic business listing is free. Subscribe to activate your Gem and analytics.</p>
+        </div>
+      </article>
+
+      <article class="gp-card gp-events">
+        <div class="gp-card-content">
+          <div class="gp-kicker"><span class="gp-symbol" aria-hidden="true">▦</span> FOR EVENT ORGANIZERS</div>
+          <h3>Share your events with the community.</h3>
+          <p class="gp-intro">Put concerts, festivals, gatherings and local experiences on the Glimpsd map. <strong>Events with free admission can be listed for free.</strong></p>
+          <ul class="gp-benefits">
+            <li>Add and manage your events</li>
+            <li>Reach people looking for things to do nearby</li>
+            <li>Free listings for free-admission events</li>
+            <li>Include event photos, details and links</li>
+          </ul>
+        </div>
+        <div class="gp-visual" aria-hidden="true">
+          <div class="gp-phone">
+            <div class="gp-phone-top"><span>9:41</span><span>•••</span></div>
+            <div class="gp-festival-photo"><span class="gp-stage"></span><span class="gp-light l1"></span><span class="gp-light l2"></span><span class="gp-crowd"></span></div>
+            <div class="gp-phone-body">
+              <b>Riverside Music Festival</b><small>Riverside Park · Saturday · 5 PM</small>
+              <div class="gp-tags"><span>Music</span><span>Family Friendly</span><strong>Free Admission</strong></div>
+              <p>Live music, local food and an evening by the river.</p>
+              <div class="gp-mini-btn">View Event →</div>
+            </div>
+            <div class="gp-phone-nav">Home&nbsp;&nbsp; Explore&nbsp;&nbsp; + &nbsp;&nbsp; Inbox&nbsp;&nbsp; Me</div>
+          </div>
+        </div>
+        <div class="gp-card-action">
+          <a class="gp-button gp-button-events" href="/providers/events">Submit an Event <span aria-hidden="true">→</span></a>
+          <p>Free-admission events are free to list. Paid-admission event options can vary.</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="gp-value-strip" aria-label="Why list on Glimpsd">
+      <div><span aria-hidden="true">⌖</span><b>Be Discoverable</b><p>Show up when people explore your neighborhood.</p></div>
+      <div><span aria-hidden="true">◇</span><b>Share What’s Special</b><p>Highlight one great offer or a memorable event.</p></div>
+      <div><span aria-hidden="true">▥</span><b>See What Works</b><p>Understand engagement with your business Gem.</p></div>
+      <div><span aria-hidden="true">♡</span><b>Support Local</b><p>Help people experience more of their community.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="bottom"><div class="shell bottom-row"><span>© 2026 Glimpsd</span><span>Life is happening nearby.</span></div>
+<div class="gl-legal-footer" aria-label="Glimpsd legal and company information">
+  <div class="gl-legal-inner">
+    <div class="gl-legal-brand"><strong>Glimpsd</strong><span>Life is happening nearby.</span></div>
+    <nav class="gl-legal-links" aria-label="Legal links"><a href="/privacy/">Privacy Policy</a><a href="/terms/">Terms of Service</a><a href="https://didit.me/terms/verification-privacy-notice/" target="_blank" rel="noopener noreferrer">Didit Verification Privacy</a></nav>
+    <small>© <span id="gl-legal-year">2026</span> Glimpsd. All rights reserved.</small>
+  </div>
+</div>
+<script>document.getElementById('gl-legal-year').textContent=new Date().getFullYear();</script>
+</footer>
 
 <script>
 let deferredPrompt;
