@@ -1,0 +1,32 @@
+/* Glimpsd /providers/* pages. Builds on site.css (tokens, .shell, .cta, nav) and glimpsd-legal.css (footer). */
+.pv-page{background:var(--bg)}
+.pv-page .topbar{position:relative;background:#071221;height:74px}
+.pv-hero{background:radial-gradient(900px 420px at 80% -10%,rgba(118,87,255,.45),transparent 60%),linear-gradient(180deg,#071221,#0d1c36);color:#fff;padding:72px 0 84px}
+.pv-hero.events{background:radial-gradient(900px 420px at 80% -10%,rgba(255,76,145,.38),transparent 60%),linear-gradient(180deg,#071221,#0d1c36)}
+.pv-eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;color:#b9a8ff;margin:0 0 14px}
+.pv-hero h1{font-family:"Space Grotesk",sans-serif;font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.05em;margin:0 0 18px;max-width:760px}
+.pv-hero p.lead{font-size:clamp(16px,1.8vw,19px);line-height:1.6;color:#c9d3e6;max-width:640px;margin:0 0 28px}
+.pv-actions{display:flex;gap:12px;flex-wrap:wrap}
+.pv-actions .cta{display:inline-block;padding:14px 26px}
+.pv-actions .outline{border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.08);color:#fff}
+.pv-section{padding:72px 0}
+.pv-section h2{font-family:"Space Grotesk",sans-serif;font-size:clamp(28px,4vw,42px);letter-spacing:-.04em;line-height:1.08;margin:0 0 12px;text-align:center}
+.pv-section .sub{color:var(--muted);text-align:center;max-width:620px;margin:0 auto 36px;line-height:1.6}
+.pv-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pv-card{background:#fff;border:1px solid #ededf4;border-radius:22px;box-shadow:0 15px 40px rgba(31,39,60,.07);padding:28px}
+.pv-card .num{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#9b63ff,#6749ff);color:#fff;font-weight:800;margin-bottom:14px}
+.pv-card h3{font-family:"Space Grotesk",sans-serif;font-size:21px;letter-spacing:-.02em;margin:0 0 8px}
+.pv-card p{color:var(--muted);font-size:14.5px;line-height:1.55;margin:0}
+.pv-plan{max-width:560px;margin:0 auto;background:#fff;border:1.5px solid #d9d0ff;border-radius:24px;box-shadow:var(--shadow);padding:36px;background:linear-gradient(180deg,#faf8ff,#fff 60%)}
+.pv-plan .price{font-family:"Space Grotesk",sans-serif;font-size:48px;font-weight:700;letter-spacing:-.04em;margin:4px 0 2px}
+.pv-plan .price small{font-size:16px;font-weight:600;color:var(--muted);letter-spacing:0}
+.pv-plan .kicker{font-size:12px;font-weight:800;letter-spacing:.1em;color:var(--purple)}
+.pv-list{list-style:none;padding:0;margin:20px 0 26px;display:grid;gap:12px;font-size:15px;line-height:1.45}
+.pv-list li{padding-left:28px;position:relative}
+.pv-list li:before{content:"✓";position:absolute;left:0;top:0;color:var(--purple);font-weight:800}
+.pv-plan .cta{display:block;text-align:center;padding:15px 22px}
+.pv-note{text-align:center;color:var(--muted);font-size:13px;line-height:1.5;margin:14px 0 0}
+.pv-links{text-align:center;margin-top:28px;font-size:14px}
+.pv-links a{color:var(--purple);font-weight:700}
+@media(max-width:920px){.pv-cards{grid-template-columns:1fr}.pv-page .navlinks{display:none}}
+@media(max-width:560px){.pv-hero{padding:48px 0 56px}.pv-section{padding:52px 0}.pv-plan{padding:26px}.pv-actions .cta{width:100%;text-align:center}}
