@@ -9,8 +9,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+<link rel="preload" as="image" type="image/webp" href="/assets/hero-skyline-1100.webp" media="(max-width:920px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="/assets/hero-skyline-1920.webp" media="(min-width:921px)" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="/assets/phone-approved-860.webp" imagesrcset="/assets/phone-approved-600.webp 600w, /assets/phone-approved-860.webp 860w" imagesizes="(max-width:560px) 300px, (max-width:920px) 340px, 430px" fetchpriority="high">
 <link rel="stylesheet" href="/assets/site.css">
 <link rel="stylesheet" href="/assets/provider-section.css">
 <link rel="stylesheet" href="/assets/glimpsd-legal.css">
@@ -19,7 +20,7 @@
 
 <header class="topbar">
  <div class="shell nav">
-  <img src="/assets/logo-lockup.png" class="logo-img" alt="Glimpsd">
+  <img src="/assets/logo-lockup.png" class="logo-img" alt="Glimpsd" width="108" height="32">
   <nav class="navlinks">
    <a href="#how">How it works</a><a href="#people">People</a><a href="#events">Events</a>
    <a href="#places">Places</a><a href="#gems">Gems</a><a href="#business">For Business</a><a href="#about">About</a>
@@ -42,7 +43,7 @@
   </div>
   <div class="phone-wrap">
    <div class="phone-glow"></div>
-   <img src="/assets/phone-approved.png" class="phone" alt="Glimpsd map-first PWA">
+   <picture><source type="image/webp" srcset="/assets/phone-approved-600.webp 600w, /assets/phone-approved-860.webp 860w" sizes="(max-width:560px) 300px, (max-width:920px) 340px, 430px"><img src="/assets/phone-approved.png" class="phone" alt="Glimpsd map-first PWA" width="877" height="1793" fetchpriority="high" decoding="async"></picture>
   </div>
  </div>
 </section>
@@ -65,7 +66,7 @@
   </div>
   <div class="discovery">
    <div class="discovery-card" id="people">
-    <img class="dc-photo" src="/assets/discovery_people_photo.jpg" alt="">
+    <picture><source type="image/webp" srcset="/assets/discovery_people_photo.webp"><img class="dc-photo" src="/assets/discovery_people_photo.jpg" alt="" width="640" height="853" loading="lazy" decoding="async"></picture>
     <div class="dc-shade"></div>
     <div class="dc-body">
      <div class="dc-icon" style="background:var(--purple)">👥</div>
@@ -75,7 +76,7 @@
     </div>
    </div>
    <div class="discovery-card" id="events">
-    <img class="dc-photo" src="/assets/discovery_events_photo.jpg" alt="">
+    <picture><source type="image/webp" srcset="/assets/discovery_events_photo.webp"><img class="dc-photo" src="/assets/discovery_events_photo.jpg" alt="" width="640" height="853" loading="lazy" decoding="async"></picture>
     <div class="dc-shade"></div>
     <div class="dc-body">
      <div class="dc-icon" style="background:var(--pink)">🗓️</div>
@@ -85,7 +86,7 @@
     </div>
    </div>
    <div class="discovery-card" id="places">
-    <img class="dc-photo" src="/assets/discovery_places_photo.jpg" alt="">
+    <picture><source type="image/webp" srcset="/assets/discovery_places_photo.webp"><img class="dc-photo" src="/assets/discovery_places_photo.jpg" alt="" width="640" height="853" loading="lazy" decoding="async"></picture>
     <div class="dc-shade"></div>
     <div class="dc-body">
      <div class="dc-icon" style="background:var(--blue)">📍</div>
@@ -95,7 +96,7 @@
     </div>
    </div>
    <div class="discovery-card" id="gems">
-    <img class="dc-photo" src="/assets/discovery_gems_photo.jpg" alt="">
+    <picture><source type="image/webp" srcset="/assets/discovery_gems_photo.webp"><img class="dc-photo" src="/assets/discovery_gems_photo.jpg" alt="" width="640" height="853" loading="lazy" decoding="async"></picture>
     <div class="dc-shade"></div>
     <div class="dc-body">
      <div class="dc-icon" style="background:var(--green)">💎</div>
@@ -141,17 +142,17 @@
    <p>Based on shared interests and where you both are.</p>
    <div class="pm-people">
     <div class="pm-person">
-     <div class="pm-avatar"><img src="/assets/person_emily.jpg" alt="Emily R."></div>
+     <div class="pm-avatar"><picture><source type="image/webp" srcset="/assets/person_emily.webp"><img src="/assets/person_emily.jpg" alt="Emily R." width="400" height="400" loading="lazy" decoding="async"></picture></div>
      <h4>Emily R.</h4><p class="dist">0.5 mi away</p>
      <div class="pm-tags"><span>Coffee</span><span>Photography</span><span>Travel</span></div>
     </div>
     <div class="pm-person">
-     <div class="pm-avatar"><img src="/assets/person_mike.jpg" alt="Mike T."></div>
+     <div class="pm-avatar"><picture><source type="image/webp" srcset="/assets/person_mike.webp"><img src="/assets/person_mike.jpg" alt="Mike T." width="400" height="400" loading="lazy" decoding="async"></picture></div>
      <h4>Mike T.</h4><p class="dist">0.7 mi away</p>
      <div class="pm-tags"><span>F1</span><span>Craft Beer</span><span>Hiking</span></div>
     </div>
     <div class="pm-person">
-     <div class="pm-avatar"><img src="/assets/person_sophia.jpg" alt="Sophia L."></div>
+     <div class="pm-avatar"><picture><source type="image/webp" srcset="/assets/person_sophia.webp"><img src="/assets/person_sophia.jpg" alt="Sophia L." width="400" height="400" loading="lazy" decoding="async"></picture></div>
      <h4>Sophia L.</h4><p class="dist">1.1 mi away</p>
      <div class="pm-tags"><span>Animals</span><span>Travel</span><span>Live Music</span></div>
     </div>
@@ -173,7 +174,7 @@
     <button class="pm-ctrl-btn" id="pm-compass" title="Reset bearing">🧭</button>
    </div>
    <div class="pm-card">
-    <img src="/assets/aquatic_galleria.jpg" alt="Aquatic Galleria">
+    <img src="/assets/aquatic_galleria.webp" alt="Aquatic Galleria" width="200" height="200" loading="lazy" decoding="async">
     <div class="pm-card-body">
      <h5>Aquatic Galleria<span class="tag-new">New Gem</span></h5>
      <p>Aquarium Shop · 0.3 mi</p>
@@ -341,7 +342,8 @@ document.querySelectorAll('.install').forEach(b=>b.addEventListener('click',asyn
 document.querySelectorAll('.byw-chip').forEach(c=>c.addEventListener('click',()=>{c.classList.toggle('selected');const k=c.querySelector('.byw-check');if(c.classList.contains('selected')&&!k){c.insertAdjacentHTML('afterbegin','<span class="byw-check">✓</span>')}else if(!c.classList.contains('selected')&&k){k.remove()}}));
 document.querySelector('.mode').addEventListener('click',()=>document.body.classList.toggle('night'));
 
-/* Live "People you may enjoy meeting" map panel */
+/* Live "People you may enjoy meeting" map panel — Mapbox loads only when the section nears the viewport */
+function initPeopleMap(){
 mapboxgl.accessToken='pk.eyJ1IjoiZ2xpbXBzZCIsImEiOiJjbXNqY3dzNzQwMGx3MnlwdXJiMGx4d2Z3In0.LxjUMWyvyXpTpRVboGnBwA';
 const pmCenter=[-82.6403,27.7676]; // St. Petersburg, FL
 const pmMap=new mapboxgl.Map({
@@ -398,30 +400,52 @@ document.getElementById('pm-layers').addEventListener('click',()=>{
  const cur=pmMap.getStyle().name;
  pmMap.setStyle(cur&&cur.includes('Satellite')?'mapbox://styles/mapbox/streets-v12':'mapbox://styles/mapbox/satellite-streets-v12');
 });
+}
+(function(){
+ var host=document.getElementById('map'),started=false;
+ function start(){
+  if(started)return;started=true;
+  var l=document.createElement('link');l.rel='stylesheet';l.href='https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css';document.head.appendChild(l);
+  var j=document.createElement('script');j.src='https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js';j.onload=initPeopleMap;document.head.appendChild(j);
+ }
+ if('IntersectionObserver' in window&&host){
+  var io=new IntersectionObserver(function(e){if(e[0].isIntersecting){io.disconnect();start();}},{rootMargin:'600px 0px'});io.observe(host);
+ }else{window.addEventListener('load',start);}
+})();
 </script>
-<div class="vmodal" id="videoModal" role="dialog" aria-modal="true" aria-label="Glimpsd video" aria-hidden="true">
- <button type="button" class="vclose" id="videoClose" aria-label="Close video">&times;</button>
- <video id="glVideo" src="/assets/glimpsd-video.mp4" poster="/assets/glimpsd-video-poster.jpg" controls playsinline webkit-playsinline preload="none"></video>
+<div class="vmodal" id="videoModal" role="dialog" aria-modal="true" aria-label="Glimpsd promotional video" aria-hidden="true" hidden>
+ <div class="vbox">
+  <button type="button" class="vclose" id="videoClose" aria-label="Close video">&times;</button>
+  <video id="glVideo" data-src="/assets/glimpsd-video.mp4" poster="/assets/glimpsd-video-poster.jpg" controls playsinline preload="none"></video>
+ </div>
 </div>
 <script>
 (function(){
  var btn=document.getElementById('watchVideo'),m=document.getElementById('videoModal'),v=document.getElementById('glVideo'),x=document.getElementById('videoClose');
  if(!btn||!m||!v)return;
  function open(){
-  m.classList.add('open');m.setAttribute('aria-hidden','false');document.body.classList.add('vlock');
-  v.muted=false;v.currentTime=0;
+  m.hidden=false;m.classList.add('open');m.setAttribute('aria-hidden','false');document.body.classList.add('vlock');
+  v.src=v.dataset.src;
   var p=v.play();if(p&&p.catch)p.catch(function(){});
   x.focus({preventScroll:true});
  }
  function close(){
-  v.pause();v.currentTime=0;
-  m.classList.remove('open');m.setAttribute('aria-hidden','true');document.body.classList.remove('vlock');
+  v.pause();v.removeAttribute('src');v.load();
+  m.classList.remove('open');m.setAttribute('aria-hidden','true');m.hidden=true;document.body.classList.remove('vlock');
   btn.focus({preventScroll:true});
  }
  btn.addEventListener('click',open);
  x.addEventListener('click',close);
  m.addEventListener('click',function(e){if(e.target===m)close();});
- document.addEventListener('keydown',function(e){if(e.key==='Escape'&&m.classList.contains('open'))close();});
+ document.addEventListener('keydown',function(e){
+  if(m.hidden)return;
+  if(e.key==='Escape'){close();return;}
+  if(e.key==='Tab'){ /* keep focus inside the dialog */
+   var f=[x,v],i=f.indexOf(document.activeElement);
+   e.preventDefault();
+   f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus();
+  }
+ });
 })();
 </script>
 </body>
