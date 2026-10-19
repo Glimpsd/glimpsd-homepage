@@ -100,7 +100,7 @@ img{display:block;max-width:100%}
 .byw-chip .emo{font-size:26px;display:block;margin-bottom:8px}
 .byw-chip.selected{border-color:var(--purple);background:#f8f6ff}
 .byw-check{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
-.byw-continue{grid-column:1/-1;justify-self:end;border:0;border-radius:999px;padding:14px 26px;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#9b63ff,#6749ff);cursor:pointer;margin-top:6px}
+.byw-continue{text-decoration:none;display:inline-block;grid-column:1/-1;justify-self:end;border:0;border-radius:999px;padding:14px 26px;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#9b63ff,#6749ff);cursor:pointer;margin-top:6px}
 
 /* people map, keep exact extracted approved composition */
 .people-map-wrap{padding-top:22px}
@@ -150,6 +150,35 @@ img{display:block;max-width:100%}
 .pm-pin span{transform:rotate(45deg);font-size:14px}
 .pm-pin.you{border-radius:50%;transform:none;box-shadow:0 0 0 8px rgba(66,153,255,.22)}
 
+
+/* FOR BUSINESSES & ORGANIZERS */
+.biz-head{max-width:640px;margin:0 auto 28px;text-align:center}
+.biz-eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--purple);margin-bottom:10px}
+.biz-head h2{font-family:"Space Grotesk";font-size:46px;line-height:1.02;letter-spacing:-.045em;margin:0 0 14px}
+.biz-head p{color:var(--muted);font-size:15.5px;line-height:1.55;margin:0}
+.biz-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.biz-card{background:#fff;border:1px solid #ededf4;border-radius:22px;box-shadow:0 15px 40px rgba(31,39,60,.08);padding:34px;display:flex;flex-direction:column}
+.biz-card.featured{border:1.5px solid #d9d0ff;background:linear-gradient(180deg,#faf8ff,#fff 60%)}
+.biz-badge{align-self:flex-start;font-size:11px;font-weight:800;color:#fff;background:linear-gradient(135deg,#9b63ff,#6749ff);padding:5px 11px;border-radius:999px;margin-bottom:14px}
+.biz-badge.free{background:var(--green)}
+.biz-card h3{font-family:"Space Grotesk";font-size:27px;letter-spacing:-.03em;margin:0 0 4px}
+.biz-price{font-family:"Space Grotesk";font-size:38px;font-weight:700;letter-spacing:-.04em;margin:6px 0 4px}
+.biz-price small{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0}
+.biz-sub{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 18px}
+.biz-list{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.4}
+.biz-list li{padding-left:26px;position:relative}
+.biz-list li:before{content:"✓";position:absolute;left:0;top:0;color:var(--purple);font-weight:800}
+.biz-card .cta{margin-top:auto;align-self:flex-start;display:inline-block}
+.biz-card .cta-outline{background:#fff;border:1.5px solid #e3ddff;color:var(--purple)}
+.biz-note{margin-top:20px;text-align:center;font-size:13px;color:var(--muted)}
+
+/* VIDEO POPUP */
+.vmodal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(4,8,16,.92);padding:0}
+.vmodal.open{display:flex}
+.vmodal video{width:100%;height:100%;max-width:100vw;max-height:100dvh;object-fit:contain;background:#000}
+.vclose{position:absolute;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:2;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:26px;line-height:1;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+body.vlock{overflow:hidden}
+
 /* mobile */
 @media(max-width:920px){
  .navlinks{display:none}
@@ -170,6 +199,7 @@ img{display:block;max-width:100%}
  .pm-map-wrap{min-height:420px}
  .byw-module{grid-template-columns:1fr;gap:20px;padding:26px}
  .byw-grid{grid-template-columns:repeat(3,1fr)}
+ .biz-grid{grid-template-columns:1fr}
 }
 @media(max-width:560px){
  .shell{width:min(100% - 32px,1180px)}
@@ -186,6 +216,8 @@ img{display:block;max-width:100%}
  .discovery{gap:8px}
  .big-footer{min-height:360px;background-position:38% center}
  .footer-copy h2{font-size:40px}
+ .biz-head h2{font-size:36px}
+ .biz-card{padding:26px}
  .bottom-row{display:block;text-align:center}
 }
 </style>
@@ -198,10 +230,10 @@ img{display:block;max-width:100%}
  <div class="shell nav">
   <img src="assets/logo-lockup.png" class="logo-img" alt="Glimpsd">
   <nav class="navlinks">
-   <a href="#how">How it works</a><a href="#discover">People</a><a href="#discover">Events</a>
-   <a href="#discover">Places</a><a href="#discover">Gems</a><a href="#business">For Business</a><a href="#about">About</a>
+   <a href="#how">How it works</a><a href="#people">People</a><a href="#events">Events</a>
+   <a href="#places">Places</a><a href="#gems">Gems</a><a href="#business">For Business</a><a href="#about">About</a>
   </nav>
-  <div class="nav-actions"><button class="mode" aria-label="Theme">☀︎ ◔</button><button class="cta cta-primary install">Start for Free</button></div>
+  <div class="nav-actions"><button class="mode" aria-label="Toggle light/dark theme">☀︎ ◔</button><button class="cta cta-primary install">Open Glimpsd</button></div>
  </div>
 </header>
 
@@ -211,8 +243,9 @@ img{display:block;max-width:100%}
    <h1>Life is<br>happening<br><span class="nearby">nearby.</span></h1>
    <p>The map-first discovery network that connects you to people, events, places and Gems that fit your life.</p>
    <div class="hero-actions">
-    <button class="cta cta-primary install">Start for Free →</button>
-    <a href="#discover" class="cta secondary">Watch Video&nbsp; ▶</a>
+    <button class="cta cta-primary install">Open Glimpsd →</button>
+    <a href="#map" class="cta secondary">See the Map&nbsp; ▶</a>
+    <button type="button" class="cta secondary" id="watchVideo">Watch Video&nbsp; ▶</button>
    </div>
    
   </div>
@@ -240,7 +273,7 @@ img{display:block;max-width:100%}
    <p>Glimpsd learns your interests to show you what matters most, right where you are.</p>
   </div>
   <div class="discovery">
-   <div class="discovery-card">
+   <div class="discovery-card" id="people">
     <img class="dc-photo" src="assets/discovery_people_photo.jpg" alt="">
     <div class="dc-shade"></div>
     <div class="dc-body">
@@ -250,7 +283,7 @@ img{display:block;max-width:100%}
      <div class="dc-arrow">→</div>
     </div>
    </div>
-   <div class="discovery-card">
+   <div class="discovery-card" id="events">
     <img class="dc-photo" src="assets/discovery_events_photo.jpg" alt="">
     <div class="dc-shade"></div>
     <div class="dc-body">
@@ -260,7 +293,7 @@ img{display:block;max-width:100%}
      <div class="dc-arrow">→</div>
     </div>
    </div>
-   <div class="discovery-card">
+   <div class="discovery-card" id="places">
     <img class="dc-photo" src="assets/discovery_places_photo.jpg" alt="">
     <div class="dc-shade"></div>
     <div class="dc-body">
@@ -270,7 +303,7 @@ img{display:block;max-width:100%}
      <div class="dc-arrow">→</div>
     </div>
    </div>
-   <div class="discovery-card">
+   <div class="discovery-card" id="gems">
     <img class="dc-photo" src="assets/discovery_gems_photo.jpg" alt="">
     <div class="dc-shade"></div>
     <div class="dc-body">
@@ -290,7 +323,7 @@ img{display:block;max-width:100%}
    <div class="byw-copy">
     <h2>Build your world</h2>
     <p>Choose your passions. We'll show you what matters most.</p>
-    <a href="#" class="byw-see-all">See all interests →</a>
+    <a href="/signup" class="byw-see-all">See all interests →</a>
     
    </div>
    <div class="byw-grid">
@@ -304,13 +337,13 @@ img{display:block;max-width:100%}
     <div class="byw-chip"><span class="emo">🍺</span>Craft Beer</div>
     <div class="byw-chip"><span class="emo">🤖</span>AI &amp; Tech</div>
     <div class="byw-chip"><span class="emo">🐶</span>Dogs</div>
-    <button class="byw-continue">Continue →</button>
+    <a href="/signup" class="byw-continue">Continue →</a>
    </div>
   </div>
  </div>
 </section>
 
-<section class="section people-map-wrap">
+<section class="section people-map-wrap" id="map">
  <div class="shell pm-module">
   <div class="pm-copy">
    <h2>People you may<br>enjoy meeting</h2>
@@ -357,6 +390,46 @@ img{display:block;max-width:100%}
     </div>
    </div>
   </div>
+ </div>
+</section>
+
+<section class="section" id="business">
+ <div class="shell">
+  <div class="biz-head">
+   <div class="biz-eyebrow">FOR LOCAL BUSINESSES &amp; ORGANIZERS</div>
+   <h2>Put your place on the map.</h2>
+   <p>Glimpsd helps people discover local businesses, unique experiences, and events happening nearby. Make sure they can find yours.</p>
+  </div>
+  <div class="biz-grid">
+   <div class="biz-card featured">
+    <span class="biz-badge">GLIMPSD FOR BUSINESS</span>
+    <h3>Add your business</h3>
+    <div class="biz-price">$19.99 <small>/ month</small></div>
+    <p class="biz-sub">Turn nearby discoveries into customers. A free basic listing is always available; the subscription adds your own Gem and analytics.</p>
+    <ul class="biz-list">
+     <li>Claim and manage your business on the Glimpsd map</li>
+     <li>One active Gem included &mdash; edit it anytime, as often as you like</li>
+     <li>Add photos, descriptions, offer details and expiration dates</li>
+     <li>See Gem views, taps, saves, directions and redemptions</li>
+     <li>Pause or replace your offer whenever you want</li>
+    </ul>
+    <a href="/providers/business" class="cta cta-primary">Get Started &mdash; $19.99/month</a>
+   </div>
+   <div class="biz-card">
+    <span class="biz-badge free">FREE FOR FREE-ADMISSION EVENTS</span>
+    <h3>Promote an event</h3>
+    <div class="biz-price">Free <small>to list</small></div>
+    <p class="biz-sub">Concerts, festivals, gatherings and community experiences &mdash; listed on the map and in event results with no business subscription required.</p>
+    <ul class="biz-list">
+     <li>Free-admission and community events list for free</li>
+     <li>Add dates, location, photos and ticket or website links</li>
+     <li>Events disappear from discovery when they end, and stay in your history</li>
+     <li>Paid promotion available for ticketed events, clearly labeled</li>
+    </ul>
+    <a href="/providers/events" class="cta cta-outline">Promote an Event</a>
+   </div>
+  </div>
+  <p class="biz-note">Listings are reviewed before they appear on the map. The provider dashboard is opening soon.</p>
  </div>
 </section>
 
@@ -472,8 +545,9 @@ window.addEventListener('beforeinstallprompt',e=>{
 });
 document.querySelectorAll('.install').forEach(b=>b.addEventListener('click',async()=>{
  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;}
- else{window.scrollTo({top:document.querySelector('#discover').offsetTop-60,behavior:'smooth'});}
+ else{window.location.href='/signup';}
 }));
+document.querySelectorAll('.byw-chip').forEach(c=>c.addEventListener('click',()=>{c.classList.toggle('selected');const k=c.querySelector('.byw-check');if(c.classList.contains('selected')&&!k){c.insertAdjacentHTML('afterbegin','<span class="byw-check">✓</span>')}else if(!c.classList.contains('selected')&&k){k.remove()}}));
 document.querySelector('.mode').addEventListener('click',()=>document.body.classList.toggle('night'));
 
 /* Live "People you may enjoy meeting" map panel */
@@ -533,6 +607,31 @@ document.getElementById('pm-layers').addEventListener('click',()=>{
  const cur=pmMap.getStyle().name;
  pmMap.setStyle(cur&&cur.includes('Satellite')?'mapbox://styles/mapbox/streets-v12':'mapbox://styles/mapbox/satellite-streets-v12');
 });
+</script>
+<div class="vmodal" id="videoModal" role="dialog" aria-modal="true" aria-label="Glimpsd video" aria-hidden="true">
+ <button type="button" class="vclose" id="videoClose" aria-label="Close video">&times;</button>
+ <video id="glVideo" src="assets/glimpsd-video.mp4" poster="assets/glimpsd-video-poster.jpg" controls playsinline webkit-playsinline preload="none"></video>
+</div>
+<script>
+(function(){
+ var btn=document.getElementById('watchVideo'),m=document.getElementById('videoModal'),v=document.getElementById('glVideo'),x=document.getElementById('videoClose');
+ if(!btn||!m||!v)return;
+ function open(){
+  m.classList.add('open');m.setAttribute('aria-hidden','false');document.body.classList.add('vlock');
+  v.muted=false;v.currentTime=0;
+  var p=v.play();if(p&&p.catch)p.catch(function(){});
+  x.focus({preventScroll:true});
+ }
+ function close(){
+  v.pause();v.currentTime=0;
+  m.classList.remove('open');m.setAttribute('aria-hidden','true');document.body.classList.remove('vlock');
+  btn.focus({preventScroll:true});
+ }
+ btn.addEventListener('click',open);
+ x.addEventListener('click',close);
+ m.addEventListener('click',function(e){if(e.target===m)close();});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&m.classList.contains('open'))close();});
+})();
 </script>
 </body>
 </html>
